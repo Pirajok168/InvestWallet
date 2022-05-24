@@ -10,34 +10,18 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
+import javax.inject.Inject
 
 
-private const val URL = "https://symbol-search.tradingview.com"
-class ApiRepository {
-    private var retrofit: Retrofit? = null
-    private var jsonSearchApi: JSONSearchApi? = null
+class ApiRepository @Inject constructor(
+    private val apiJSONSearch: JSONSearchApi
+) {
 
-
-    init {
-        retrofit = Retrofit.Builder()
-            .baseUrl(URL)
-            .client(OkHttpClient())
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        jsonSearchApi = retrofit?.create(JSONSearchApi::class.java)
-
+    suspend fun getListTicket(text: String): List<QuoteDTO>{
+        return apiJSONSearch.getFindQuotes(text, "ru","stock")
     }
 
 
-    companion object{
-        private var apiRepository: ApiRepository? = null
-        operator fun invoke(): ApiRepository? {
-            return if (apiRepository == null){
-                ApiRepository()
-            }else apiRepository
-        }
-    }
 
 
 }

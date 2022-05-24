@@ -410,8 +410,6 @@ fun LittleCardTicket(
 
         }
         
-
-        
     }
 }
 

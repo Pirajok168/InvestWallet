@@ -8,6 +8,7 @@ data class QuoteDTO(
     var symbol: String,
     val type: String,
     val typespecs: List<String>,
+    val logoid: String
 ){
 
     val tag: String
@@ -17,6 +18,9 @@ data class QuoteDTO(
     val tagHttp:String
         get() = "${replace(exchange)}-${replace(symbol)}".uppercase()
 
+
+    val getDescription: String
+        get() = "${replace(description)}"
 
     private fun replace(str: String): String{
         var newStr = str
