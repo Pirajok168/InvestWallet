@@ -79,4 +79,10 @@ dependencies {
     implementation "com.google.dagger:hilt-android:2.38.1"
     kapt "com.google.dagger:hilt-compiler:2.38.1"
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
+
+    /*Shimmer*/
+    implementation "me.vponomarenko:compose-shimmer:1.0.0"
+
+    /*Placeholder*/
+    implementation "com.google.accompanist:accompanist-placeholder:$inset_version"
 }

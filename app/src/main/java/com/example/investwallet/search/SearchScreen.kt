@@ -1,5 +1,6 @@
 package com.example.investwallet.search
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -12,6 +13,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,13 +32,16 @@ import coil.request.ImageRequest
 import com.example.investwallet.R
 import com.example.investwallet.dto.QuoteDTO
 import com.example.investwallet.ui.theme.InvestWalletTheme
+import com.google.accompanist.placeholder.placeholder
+
 
 @Composable
 fun SearchScreen(
     searchViewModel: SearchViewModel = hiltViewModel()
 ) {
 
-    val listSearchingTicket = searchViewModel.listSearchingTicket
+    val searchViewState = searchViewModel.searchViewState.collectAsState()
+
     Scaffold(
         topBar = { SearchTopBar(
             onBack ={ TODO() },
@@ -48,9 +53,22 @@ fun SearchScreen(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             contentPadding = PaddingValues(20.dp)
         ){
-            items(listSearchingTicket.value){
-                SearchCardTicket(it)
+
+            when(searchViewState.value.isLoading){
+                StateSearch.EndSearch -> {
+                    items(searchViewState.value.listSearchingTicket){
+                        SearchCardTicket(it)
+                    }
+                }
+                StateSearch.LoadingSearch -> {
+
+                }
+                StateSearch.NullSearch -> {
+                   TODO()
+                }
             }
+
+
         }
     }
 }
@@ -73,7 +91,7 @@ fun SearchTopBar(
 
 @Composable
 fun SearchCardTicket(
-    ticket: QuoteDTO
+    ticket: QuoteDTO,
 ) {
     Card(
         modifier = Modifier
@@ -114,7 +132,7 @@ fun SearchCardTicket(
                         text = ticket.getDescription,
                         fontWeight = FontWeight.Bold,
                         maxLines = 3,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }
@@ -125,7 +143,7 @@ fun SearchCardTicket(
                     text = ticket.exchange, 
                     fontWeight = FontWeight.ExtraLight,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
 
