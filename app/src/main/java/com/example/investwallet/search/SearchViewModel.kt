@@ -23,8 +23,7 @@ sealed class StateSearch{
 
 
 data class SearchViewState(
-    val listSearchingTicket: List<QuoteDTO> = List(20){
-        QuoteDTO("","","","","","", emptyList(), "") },
+    val listSearchingTicket: List<QuoteDTO> = emptyList(),
 
     val isLoading: StateSearch = StateSearch.LoadingSearch
 )
