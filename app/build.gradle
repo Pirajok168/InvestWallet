@@ -64,7 +64,8 @@ dependencies {
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
 
     /*Inset*/
-    implementation "com.google.accompanist:accompanist-insets:$inset_version"
+    implementation "com.google.accompanist:accompanist-insets-ui:$inset_version"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$inset_version"
 
 
     /*Coil*/

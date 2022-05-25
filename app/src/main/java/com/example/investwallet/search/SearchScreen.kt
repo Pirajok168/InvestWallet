@@ -50,6 +50,8 @@ import coil.request.ImageRequest
 import com.example.investwallet.R
 import com.example.investwallet.dto.QuoteDTO
 import com.example.investwallet.ui.theme.InvestWalletTheme
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.placeholder.PlaceholderDefaults
 import com.google.accompanist.placeholder.placeholder
 import kotlinx.coroutines.launch
@@ -71,9 +73,11 @@ fun SearchScreen(
             onEditText = { searchViewModel.onSearch(it) }
         ) }
     ) {
+            contentPadding ->
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(10.dp),
-            contentPadding = PaddingValues(20.dp)
+            contentPadding = PaddingValues(20.dp),
+            modifier = Modifier.padding(contentPadding)
         ){
 
             when(searchViewState.value.isLoading){
@@ -171,7 +175,7 @@ fun SearchTopBar(
                     modifier = Modifier.rotate(rotate)
                 )
             }
-        }
+        },
     )
 }
 
