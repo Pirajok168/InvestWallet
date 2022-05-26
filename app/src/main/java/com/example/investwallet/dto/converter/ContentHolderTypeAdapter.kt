@@ -78,9 +78,17 @@ data class Children(
 )
 
 data class Params(
-    val symbol: String,
+    val symbol: String?,
     val text: String
-)
+){
+    fun getURLImg(): String{
+        return if (symbol != null)
+            "https://s3-symbol-logo.tradingview.com/$symbol--big.svg"
+        else{
+            ""
+        }
+    }
+}
 
 sealed class Content{
     data class ChildrenContent(val content: Children): Content()
