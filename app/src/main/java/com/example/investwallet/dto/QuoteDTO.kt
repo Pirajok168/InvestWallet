@@ -7,9 +7,9 @@ data class QuoteDTO(
     val provider_id: String,
     var symbol: String,
     val type: String,
-    val typespecs: List<String>,
+    val typespecs: List<String>?,
     val logoid: String,
-    val prefix: String = ""
+    val prefix: String? = null
 ){
 
     val tag: String
@@ -18,7 +18,7 @@ data class QuoteDTO(
 
     val tagHttp:String
         get(){
-            return if (typespecs.firstOrNull() == "etf" && !prefix.isNullOrEmpty()){
+            return if (typespecs?.firstOrNull() == "etf" && prefix != null){
                 "${replace(prefix)}:${replace(symbol)}".uppercase()
             }else{
                 "${replace(exchange)}:${replace(symbol)}".uppercase()

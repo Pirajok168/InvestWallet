@@ -2,18 +2,21 @@ package com.example.investwallet.ui.detail
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
@@ -29,6 +32,7 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.example.investwallet.R
 import com.example.investwallet.dto.headlines.Headline
+import com.example.investwallet.dto.headlines.RelatedSymbol
 import com.example.investwallet.ui.theme.InvestWalletTheme
 
 @Composable
@@ -42,7 +46,7 @@ fun DetailScreen(
     val symbol = detailViewModel.symbol.collectAsState()
 
     Scaffold(
-        topBar = { TopBarDetailScreen("APPLE", onBack) },
+        topBar = { TopBarDetailScreen(symbol.value?.getDescription?:"", onBack) },
         modifier = Modifier.systemBarsPadding()
     ) {
             paddingValues ->
@@ -135,19 +139,33 @@ fun Headlines(
 }
 
 
+/**Оптимизация нужна */
 @Composable
-fun ItemNews(headline: Headline) {
+fun ItemNews(
+    headline: Headline
+) {
 
 
     Column(modifier = Modifier.padding(horizontal = 20.dp)) {
 
         if (!headline.relatedSymbols.isNullOrEmpty()){
             LittleIconPrevNews(Modifier){
-                headline.relatedSymbols.forEach {
-                        symbol ->
+                headline.relatedSymbols = headline.relatedSymbols.filter {
+                    it.logoid != null
+                }
+
+                val sizeIcons = if (headline.relatedSymbols.size >= 13){
+                    13
+                }else{
+                    headline.relatedSymbols.size
+                }
+
+                for (i in 0 until sizeIcons){
+                    val symbol = headline.relatedSymbols[i]
+
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data("https://s3-symbol-logo.tradingview.com/${symbol.logoid}--big.svg")
+                            .data(symbol.getURLImg())
                             .decoderFactory(SvgDecoder.Factory())
                             .crossfade(true)
                             .build(),
@@ -156,9 +174,11 @@ fun ItemNews(headline: Headline) {
                             .size(25.dp)
                             .clip(CircleShape),
                         contentScale = ContentScale.Crop,
-                        placeholder= painterResource(id = R.drawable.ic_launcher_foreground)
+                        placeholder= painterResource(id = R.drawable.ic_launcher_foreground),
                     )
+
                 }
+
             }
         }
         

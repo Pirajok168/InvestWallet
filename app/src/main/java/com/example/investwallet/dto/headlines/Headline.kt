@@ -5,7 +5,7 @@ data class Headline(
     val id: String,
     val permission: String,
     val published: Int,
-    val relatedSymbols: List<RelatedSymbol>,
+    var relatedSymbols: List<RelatedSymbol>,
     val shortDescription: String,
     val source: String,
     val title: String,
