@@ -78,8 +78,8 @@ data class Children(
 )
 
 data class Params(
-    val linkText: String,
-    val url: String
+    val symbol: String,
+    val text: String
 )
 
 sealed class Content{
@@ -102,7 +102,7 @@ data class newsDtoItem(
 
 data class RelatedSymbol(
     @SerializedName("logoid")
-    val logoid: String,
+    val logoid: String?,
     @SerializedName("currency-logoid")
     val currencyLogoid: String?,
     val symbol: String

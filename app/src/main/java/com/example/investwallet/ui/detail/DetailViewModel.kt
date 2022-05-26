@@ -23,10 +23,15 @@ class DetailViewModel @Inject constructor(
 ) : ViewModel() {
     val headlineList: MutableStateFlow<List<newsDtoItem>> = MutableStateFlow(emptyList())
     private val _symbol = repository.symbol
-
     val symbol: StateFlow<QuoteDTO?>
         get() = _symbol
 
+
+    private val detailNews = repository.detailNews
+
+    fun check(_detailNews: newsDtoItem){
+        detailNews.value = _detailNews
+    }
     init {
         viewModelScope.launch(Dispatchers.IO) {
             val list = repository.getHeadlines()

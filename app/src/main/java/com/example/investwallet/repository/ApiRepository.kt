@@ -24,6 +24,7 @@ class ApiRepository @Inject constructor(
 ) {
 
     val symbol: MutableStateFlow<QuoteDTO?> = MutableStateFlow(null)
+    val detailNews: MutableStateFlow<newsDtoItem?> = MutableStateFlow(null)
 
     suspend fun getListTicket(text: String): List<QuoteDTO>{
         return apiJSONSearch.getFindQuotes(text, "ru","stock")
