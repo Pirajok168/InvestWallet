@@ -2,7 +2,10 @@ package com.example.investwallet
 
 import com.example.investwallet.api.JSONHeadlinesAPI
 import com.example.investwallet.api.JSONSearchApi
+import com.example.investwallet.dto.converter.Content
+import com.example.investwallet.dto.converter.ContentHolderTypeAdapter
 import com.example.investwallet.repository.ApiRepository
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,7 +38,16 @@ object AppModule {
     fun provideJSONHeadlinesApi(): JSONHeadlinesAPI = Retrofit.Builder()
         .baseUrl("https://news-headlines.tradingview.com/")
         .client(OkHttpClient())
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(
+            GsonConverterFactory.create(
+                GsonBuilder()
+                    .registerTypeAdapter(
+                        Content::class.java,
+                        ContentHolderTypeAdapter()
+                    )
+                    .create()
+            )
+        )
         .build()
         .create(JSONHeadlinesAPI::class.java)
 

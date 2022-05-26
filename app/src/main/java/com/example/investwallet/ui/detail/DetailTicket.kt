@@ -31,6 +31,7 @@ import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.example.investwallet.R
+import com.example.investwallet.dto.converter.newsDtoItem
 import com.example.investwallet.dto.headlines.Headline
 import com.example.investwallet.dto.headlines.RelatedSymbol
 import com.example.investwallet.ui.theme.InvestWalletTheme
@@ -116,7 +117,7 @@ fun Info(
 
 @Composable
 fun Headlines(
-    listHeadline: List<Headline>,
+    listHeadline: List<newsDtoItem>,
     onClick:(headline: Headline)-> Unit
 ) {
     Text(
@@ -142,7 +143,7 @@ fun Headlines(
 /**Оптимизация нужна */
 @Composable
 fun ItemNews(
-    headline: Headline
+    headline: newsDtoItem
 ) {
 
 
@@ -150,9 +151,9 @@ fun ItemNews(
 
         if (!headline.relatedSymbols.isNullOrEmpty()){
             LittleIconPrevNews(Modifier){
-                headline.relatedSymbols = headline.relatedSymbols.filter {
-                    it.logoid != null
-                }
+                /*headline.relatedSymbols = headline.relatedSymbols.filter {
+                    it.currencyLogoid != null
+                }*/
 
                 val sizeIcons = if (headline.relatedSymbols.size >= 13){
                     13
