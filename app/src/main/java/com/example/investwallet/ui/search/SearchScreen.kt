@@ -51,7 +51,8 @@ import me.vponomarenko.compose.shimmer.shimmer
 @Composable
 fun SearchScreen(
     searchViewModel: SearchViewModel = hiltViewModel(),
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onOpen: () -> Unit
 ) {
 
     val searchViewState = searchViewModel.searchViewState.collectAsState()
@@ -73,7 +74,14 @@ fun SearchScreen(
             when(searchViewState.value.isLoading){
                 StateSearch.EndSearch -> {
                     items(searchViewState.value.listSearchingTicket){
-                        SearchCardTicket(it)
+                        SearchCardTicket(
+                            it,
+                            onOpen={
+                                    symbol->
+                                searchViewModel.checkSymbol(symbol)
+                                onOpen()
+                            }
+                        )
                     }
                 }
                 StateSearch.LoadingSearch -> {
@@ -172,15 +180,20 @@ fun SearchTopBar(
 
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SearchCardTicket(
     ticket: QuoteDTO,
+    onOpen: (ticket: QuoteDTO) -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(100.dp),
-        shape = RoundedCornerShape(20.dp)
+        shape = RoundedCornerShape(20.dp),
+        onClick = {
+            onOpen(ticket)
+        }
     ) {
         Row(
             modifier = Modifier
@@ -289,6 +302,6 @@ fun _PlaceholderSearchCardTicket() {
 @Composable
 fun PreviewSearchScreen() {
     InvestWalletTheme {
-        SearchScreen(onBack = {})
+        SearchScreen(onBack = {}, onOpen = {})
     }
 }

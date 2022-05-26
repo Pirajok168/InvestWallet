@@ -77,7 +77,10 @@ object SampleData{
 
 
 @Composable
-fun Home(onSearch: () -> Unit) {
+fun Home(
+    onSearch: () -> Unit,
+    onDetail: (ticket: Ticket) -> Unit
+) {
     val format = SimpleDateFormat("H:MM, EEE, MMM d")
     Scaffold(
         backgroundColor = MaterialTheme.colors.background,
@@ -103,7 +106,7 @@ fun Home(onSearch: () -> Unit) {
             Portfolio(
                 SampleData.list,
                 onSeeAll = { TODO() },
-                onOpenTicket = { TODO() }
+                onOpenTicket = onDetail
             )
 
             Information(SampleData.list,)
@@ -417,7 +420,7 @@ fun LittleCardTicket(
 @Composable
 fun PreviewHome() {
     InvestWalletTheme{
-        Home(onSearch = { })
+        Home(onSearch = { }, onDetail = { })
     }
 }
 
