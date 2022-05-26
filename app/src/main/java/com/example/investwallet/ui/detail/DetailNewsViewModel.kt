@@ -34,7 +34,7 @@ import javax.inject.Inject
 data class StateDetailNews(
     val annotationText: List<AnnotatedString> = emptyList(),
     val title: String = "",
-    val listChip: List<RelatedSymbol> = emptyList()
+    val listChip: List<RelatedSymbol> = emptyList(),
 )
 
 @HiltViewModel

@@ -1,6 +1,8 @@
 package com.example.investwallet.ui.detail
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -12,10 +14,7 @@ import androidx.compose.material.*
 import androidx.compose.material.R
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -25,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,110 +57,122 @@ fun DetailNews(
             .fillMaxSize(),
         color = MaterialTheme.colors.background,
     ) {
-        Column(modifier = Modifier
-            .verticalScroll(rememberScrollState())) {
+        if (detailNews.value.title.isNotEmpty()) {
 
-            Text(
-                text = detailNews.value.title,
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 30.sp,
-                modifier = Modifier.padding(horizontal = 10.dp, vertical = 20.dp),
-            )
-
-            FlowRow(
-                mainAxisSpacing = 10.dp,
-                modifier = Modifier.padding(10.dp)
-            ) {
-                detailNews.value.listChip.forEach {
-                    Log.e("chip", it.symbol)
-                    Chip(
-                        onClick = {  },
-                        leadingIcon = {
-                            AsyncImage(
-                                model = ImageRequest.Builder(LocalContext.current)
-                                    .data(it.getURLImg())
-                                    .decoderFactory(SvgDecoder.Factory())
-                                    .crossfade(true)
-                                    .build(),
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .padding(5.dp)
-                                    .size(30.dp)
-                                    .clip(CircleShape),
-                                contentScale = ContentScale.Crop,
-                                placeholder= painterResource(id = com.example.investwallet.R.drawable.ic_launcher_foreground)
-                            )
-                        },
-                        content = {
-                            Text(text = it.symbol)
-                        },
-                    )
-                }
+            val sizeList = if (detailNews.value.listChip.size > 2){
+                2
+            }else{
+                detailNews.value.listChip.size
             }
 
-            detailNews.value.annotationText.forEach {
-                    annotated ->
-                ClickableText(
-                    text = annotated,
-                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-                    onClick = {
-                            offset->
-                        Log.d("Clicked URL", "CLICK")
-                        annotated.getStringAnnotations(tag = "URL", start = offset,
-                            end = offset)
-                            .firstOrNull()?.let { annotation ->
-                                // If yes, we log its value
-                                Log.d("Clicked URL", annotation.item)
-                            }
-                    }
+            val sizePreview = remember {
+                mutableStateOf(
+                    sizeList
                 )
             }
+            val selectedList= listOf("Раскрыть список", "Скрыть список")
+            val (selectedOption, onOptionSelected ) = remember { mutableStateOf(selectedList[0]) }
 
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+            ) {
 
-            /*detailNews.value?.astDescription?.children?.forEach {
-                if (it is Content.ChildrenContent){
-                    val test = it
-                    val list = test.content.children
-                    val annotationText = buildAnnotatedString {
-                        list.forEach {
-                                con->
-                            if (con is Content.StringContent){
-                                append(con.content)
-                            }else if (con is Content.ChildrenContent){
-                                pushStringAnnotation(tag = "URL",
-                                    annotation = "https://developer.android.com")
+                Text(
+                    text = detailNews.value.title,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 30.sp,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 20.dp),
+                )
 
-                                withStyle(style = SpanStyle(color = Color.Blue,
-                                    fontWeight = FontWeight.Bold)
-                                ) {
-                                    append(con.content.params?.text?: "")
-                                }
-                                pop()
-                            }
-                        }
-
+                FlowRow(
+                    mainAxisSpacing = 10.dp,
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .animateContentSize()
+                ) {
+                    for (i in 0 until sizePreview.value) {
+                        val it = detailNews.value.listChip[i]
+                        Chip(
+                            onClick = { },
+                            leadingIcon = {
+                                AsyncImage(
+                                    model = ImageRequest.Builder(LocalContext.current)
+                                        .data(it.getURLImg())
+                                        .decoderFactory(SvgDecoder.Factory())
+                                        .crossfade(true)
+                                        .build(),
+                                    contentDescription = "",
+                                    modifier = Modifier
+                                        .padding(5.dp)
+                                        .size(30.dp)
+                                        .clip(CircleShape),
+                                    contentScale = ContentScale.Crop,
+                                    placeholder = painterResource(id = com.example.investwallet.R.drawable.ic_launcher_foreground)
+                                )
+                            },
+                            content = {
+                                Text(text = it.symbol)
+                            },
+                        )
                     }
 
+                }
+
+                AnimatedVisibility(visible = detailNews.value.listChip.size > 2) {
                     ClickableText(
-                        text = annotationText,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                        text = AnnotatedString(
+                            text = selectedOption,
+                            spanStyles = listOf(
+                                AnnotatedString.Range(
+                                    SpanStyle(
+                                        color = MaterialTheme.colors.primary,
+                                        fontSize = 18.sp,
+                                        fontFamily = FontFamily.Monospace
+                                    ),
+                                    0,
+                                    selectedOption.length
+                                ),
+                            )
+                        ) ,
                         onClick = {
-                                offset->
+                            if (sizePreview.value == detailNews.value.listChip.size
+                                && detailNews.value.listChip.size > 2
+                            ){
+                                sizePreview.value = 2
+                                onOptionSelected(selectedList.first())
+                            }else{
+                                sizePreview.value = detailNews.value.listChip.size
+                                onOptionSelected(selectedList.last())
+                            }
+                        },
+                        modifier = Modifier.padding(10.dp)
+                    )
+                }
+
+
+
+
+                detailNews.value.annotationText.forEach { annotated ->
+                    ClickableText(
+                        text = annotated,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                        onClick = { offset ->
                             Log.d("Clicked URL", "CLICK")
-                            annotationText.getStringAnnotations(tag = "URL", start = offset,
-                                end = offset)
+                            annotated.getStringAnnotations(
+                                tag = "URL", start = offset,
+                                end = offset
+                            )
                                 .firstOrNull()?.let { annotation ->
                                     // If yes, we log its value
                                     Log.d("Clicked URL", annotation.item)
                                 }
                         }
                     )
-                }else{
-
                 }
 
 
-            }*/
+            }
         }
     }
 

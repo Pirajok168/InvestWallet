@@ -36,7 +36,7 @@ class DetailViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val list = repository.getHeadlines()
 
-
+            Log.e("list", list.toString())
             withContext(Dispatchers.IO){
                 headlineList.value = list
             }
