@@ -1,4 +1,4 @@
-package com.example.investwallet.search
+package com.example.investwallet.ui.search
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf

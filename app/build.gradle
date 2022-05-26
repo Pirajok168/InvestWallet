@@ -86,4 +86,7 @@ dependencies {
 
     /*Placeholder*/
     implementation "com.google.accompanist:accompanist-placeholder:$inset_version"
+
+    /*Navigation*/
+    implementation "androidx.navigation:navigation-compose:$nav_version"
 }

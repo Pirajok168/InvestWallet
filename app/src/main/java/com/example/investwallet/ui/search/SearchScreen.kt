@@ -1,9 +1,6 @@
-package com.example.investwallet.search
+package com.example.investwallet.ui.search
 
-import android.annotation.SuppressLint
-import android.graphics.Rect
 import android.util.Log
-import android.view.ViewTreeObserver
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -26,16 +23,13 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -50,25 +44,21 @@ import coil.request.ImageRequest
 import com.example.investwallet.R
 import com.example.investwallet.dto.QuoteDTO
 import com.example.investwallet.ui.theme.InvestWalletTheme
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.rememberInsetsPaddingValues
-import com.google.accompanist.placeholder.PlaceholderDefaults
-import com.google.accompanist.placeholder.placeholder
-import kotlinx.coroutines.launch
 import me.vponomarenko.compose.shimmer.shimmer
 
 
-@OptIn(ExperimentalFoundationApi::class)
+
 @Composable
 fun SearchScreen(
-    searchViewModel: SearchViewModel = hiltViewModel()
+    searchViewModel: SearchViewModel = hiltViewModel(),
+    onBack: () -> Unit
 ) {
 
     val searchViewState = searchViewModel.searchViewState.collectAsState()
 
     Scaffold(
         topBar = { SearchTopBar(
-            onBack ={ TODO() },
+            onBack =onBack,
             searchViewModel.searchValue.value,
             onEditText = { searchViewModel.onSearch(it) }
         ) }
@@ -176,6 +166,7 @@ fun SearchTopBar(
                 )
             }
         },
+        modifier = Modifier.statusBarsPadding()
     )
 }
 
@@ -298,6 +289,6 @@ fun _PlaceholderSearchCardTicket() {
 @Composable
 fun PreviewSearchScreen() {
     InvestWalletTheme {
-        SearchScreen()
+        SearchScreen(onBack = {})
     }
 }

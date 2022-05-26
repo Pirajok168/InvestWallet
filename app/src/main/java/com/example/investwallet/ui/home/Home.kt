@@ -1,18 +1,15 @@
-package com.example.investwallet.home
+package com.example.investwallet.ui.home
 
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -80,21 +77,22 @@ object SampleData{
 
 
 @Composable
-fun Home() {
+fun Home(onSearch: () -> Unit) {
     val format = SimpleDateFormat("H:MM, EEE, MMM d")
     Scaffold(
         backgroundColor = MaterialTheme.colors.background,
         topBar = {
             HomeTopBar(
                 "Мой кошелёк",
-                onSearch = {
-                    TODO()
-                }
+                onSearch = onSearch
             )
-        }
+        },
+        modifier = Modifier.systemBarsPadding()
     ) {
+            contentPadding->
         Column(
             modifier = Modifier
+                .padding(contentPadding)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
@@ -135,7 +133,8 @@ fun HomeTopBar(
                     contentDescription = null
                 )
             }
-        }
+        },
+        modifier = Modifier
     )
 }
 
@@ -326,9 +325,10 @@ fun Information(
         selectedList.forEach{
                 text ->
             val backgroundColor = if (text == selectedOption)
-                MaterialTheme.colors.primary else Color.White
+                MaterialTheme.colors.primary else MaterialTheme.colors.surface
             Row(
                 Modifier
+                    .clip(RoundedCornerShape(10.dp))
                     .selectable(
                         selected = (text == selectedOption),
                         onClick = { onOptionSelected(text) },
@@ -338,7 +338,7 @@ fun Information(
             ) {
                 Card(
                     backgroundColor = backgroundColor,
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(10.dp),
                 ) {
                     Text(
                         text = text,
@@ -346,8 +346,8 @@ fun Information(
                         modifier = Modifier.padding(10.dp)
                     )
                 }
-                Spacer(modifier = Modifier.size(10.dp))
             }
+            Spacer(modifier = Modifier.size(10.dp))
         }
     }
 
@@ -417,7 +417,7 @@ fun LittleCardTicket(
 @Composable
 fun PreviewHome() {
     InvestWalletTheme{
-        Home()
+        Home(onSearch = { })
     }
 }
 

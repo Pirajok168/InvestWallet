@@ -1,14 +1,10 @@
-package com.example.investwallet
+package com.example.investwallet.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -17,9 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
-import com.example.investwallet.home.Home
-import com.example.investwallet.repository.ApiRepository
-import com.example.investwallet.search.SearchScreen
+import com.example.investwallet.ui.search.SearchScreen
 import com.example.investwallet.ui.theme.InvestWalletTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,9 +38,8 @@ class MainActivity : ComponentActivity() {
 
             InvestWalletTheme(darkTheme) {
                 Surface(modifier = Modifier
-                    .fillMaxSize()
-                    .systemBarsPadding()) {
-                    SearchScreen()
+                    .fillMaxSize()) {
+                    InvestWalletApp()
                 }
 
             }
