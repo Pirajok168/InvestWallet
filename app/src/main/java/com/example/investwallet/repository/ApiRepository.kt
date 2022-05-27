@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.investwallet.api.JSONHeadlinesAPI
 import com.example.investwallet.api.JSONSearchApi
 import com.example.investwallet.dto.QuoteDTO
+import com.example.investwallet.dto.converter.newsDtoItem
 import com.example.investwallet.dto.headlines.Headline
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -23,6 +24,7 @@ class ApiRepository @Inject constructor(
 ) {
 
     val symbol: MutableStateFlow<QuoteDTO?> = MutableStateFlow(null)
+    val detailNews: MutableStateFlow<newsDtoItem?> = MutableStateFlow(null)
 
     suspend fun getListTicket(text: String): List<QuoteDTO>{
         return apiJSONSearch.getFindQuotes(text, "ru","stock")
@@ -30,14 +32,14 @@ class ApiRepository @Inject constructor(
 
     suspend fun getHeadlines(
         category: String = "stock",
-        lang: String = "ru"): List<Headline>{
+        lang: String = "ru"): List<newsDtoItem>{
         Log.e("tag",symbol.value?.tagHttp ?: "почему")
         return try {
             api.getHeadlines(category, lang, symbol.value?.tagHttp ?: " ")
         }catch (e: Exception){
             Log.e("tag",e.message.toString())
 
-            emptyList<Headline>()
+            emptyList<newsDtoItem>()
         }
 
     }

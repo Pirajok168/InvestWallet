@@ -1,5 +1,6 @@
 package com.example.investwallet.api
 
+import com.example.investwallet.dto.converter.newsDtoItem
 import com.example.investwallet.dto.headlines.Headline
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -13,6 +14,6 @@ interface JSONHeadlinesAPI {
         @Query("category") category: String,
         @Query("lang") lang: String,
         @Query("symbol") symbol: String
-    ): List<Headline>
+    ): List<newsDtoItem>
 
 }

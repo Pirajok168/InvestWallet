@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.investwallet.ui.detail.DetailNews
 import com.example.investwallet.ui.detail.DetailScreen
 import com.example.investwallet.ui.home.Home
 import com.example.investwallet.ui.search.SearchScreen
@@ -14,6 +15,7 @@ sealed class Screen(val route: String){
     object Home: Screen("home")
     object Search: Screen("search")
     object Detail: Screen("detail")
+    object DetailNews: Screen("detail_news")
 }
 
 @Composable
@@ -59,7 +61,22 @@ fun InvestWalletApp(
                 backStackEntry ->
 
             DetailScreen(
-                onBack = {}
+                onBack = {
+                    navController.popBackStack()
+                },
+                onClick = {
+                    navController.navigate(Screen.DetailNews.route)
+                }
+            )
+        }
+
+        composable(
+            route = Screen.DetailNews.route
+        ){
+            DetailNews(
+                onBack = {
+                    navController.popBackStack()
+                }
             )
         }
     }

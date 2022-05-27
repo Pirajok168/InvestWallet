@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.investwallet.dto.QuoteDTO
+import com.example.investwallet.dto.converter.newsDtoItem
 import com.example.investwallet.dto.headlines.Headline
 import com.example.investwallet.repository.ApiRepository
 import com.example.investwallet.ui.search.SearchViewState
@@ -20,17 +21,22 @@ import javax.inject.Inject
 class DetailViewModel @Inject constructor(
     private val repository: ApiRepository
 ) : ViewModel() {
-    val headlineList: MutableStateFlow<List<Headline>> = MutableStateFlow(emptyList())
+    val headlineList: MutableStateFlow<List<newsDtoItem>> = MutableStateFlow(emptyList())
     private val _symbol = repository.symbol
-
     val symbol: StateFlow<QuoteDTO?>
         get() = _symbol
 
+
+    private val detailNews = repository.detailNews
+
+    fun check(_detailNews: newsDtoItem){
+        detailNews.value = _detailNews
+    }
     init {
         viewModelScope.launch(Dispatchers.IO) {
             val list = repository.getHeadlines()
 
-
+            Log.e("list", list.toString())
             withContext(Dispatchers.IO){
                 headlineList.value = list
             }

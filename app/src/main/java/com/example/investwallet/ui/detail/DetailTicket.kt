@@ -1,12 +1,9 @@
 package com.example.investwallet.ui.detail
 
 import android.util.Log
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -31,6 +28,7 @@ import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.example.investwallet.R
+import com.example.investwallet.dto.converter.newsDtoItem
 import com.example.investwallet.dto.headlines.Headline
 import com.example.investwallet.dto.headlines.RelatedSymbol
 import com.example.investwallet.ui.theme.InvestWalletTheme
@@ -38,12 +36,14 @@ import com.example.investwallet.ui.theme.InvestWalletTheme
 @Composable
 fun DetailScreen(
     detailViewModel: DetailViewModel = hiltViewModel(),
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onClick: (headline: newsDtoItem) -> Unit
 ) {
 
 
     val headlineList = detailViewModel.headlineList.collectAsState()
     val symbol = detailViewModel.symbol.collectAsState()
+
 
     Scaffold(
         topBar = { TopBarDetailScreen(symbol.value?.getDescription?:"", onBack) },
@@ -60,7 +60,10 @@ fun DetailScreen(
                 "140 $"
             )
 
-            Headlines(headlineList.value, onClick = {})
+            Headlines(headlineList.value, onClick = {
+                detailViewModel.check(it)
+                onClick(it)
+            })
         }
     }
 }
@@ -116,8 +119,8 @@ fun Info(
 
 @Composable
 fun Headlines(
-    listHeadline: List<Headline>,
-    onClick:(headline: Headline)-> Unit
+    listHeadline: List<newsDtoItem>,
+    onClick: (headline: newsDtoItem) -> Unit
 ) {
     Text(
         text = "Главные новости",
@@ -130,7 +133,7 @@ fun Headlines(
 
 
     listHeadline.forEach {
-        ItemNews(it)
+        ItemNews(it, onClick)
         Spacer(modifier = Modifier.size(25.dp))
         Divider(modifier = Modifier.padding(horizontal = 20.dp))
         Spacer(modifier = Modifier.size(25.dp))
@@ -142,11 +145,18 @@ fun Headlines(
 /**Оптимизация нужна */
 @Composable
 fun ItemNews(
-    headline: Headline
+    headline: newsDtoItem,
+    onClick: (headline: newsDtoItem) -> Unit
 ) {
 
 
-    Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 20.dp)
+            .clickable {
+                onClick(headline)
+            }
+    ) {
 
         if (!headline.relatedSymbols.isNullOrEmpty()){
             LittleIconPrevNews(Modifier){
