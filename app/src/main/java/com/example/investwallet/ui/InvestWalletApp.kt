@@ -86,7 +86,7 @@ fun InvestWalletApp(
                     navController.popBackStack()
                 },
                 onClick = {
-                    navController.navigate("${Screen.Detail.route}?tag=$it")
+                    navController.navigate("${Screen.Detail.route}?tag=$it&category=stock")
                 }
             )
         }

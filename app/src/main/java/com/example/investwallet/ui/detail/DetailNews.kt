@@ -91,6 +91,7 @@ fun DetailNews(
                         Chip(
                             onClick = {
                                 //detailNewsViewModel.loadHeadlinesChip(it)
+
                                 onClick(it.getTag())
                             },
                             leadingIcon = {
