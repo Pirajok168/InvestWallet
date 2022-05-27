@@ -10,6 +10,7 @@ interface JSONSearchApi {
     @GET("/symbol_search/?exchange=&hl=1&domain=production")
     suspend fun getFindQuotes(@Query("text") text: String
                               , @Query("lang") lang: String
-                              , @Query("type") type: String): List<QuoteDTO>
+                              , @Query("type") type: String
+                              , @Query("exchange")exchange: String): List<QuoteDTO>
 
 }

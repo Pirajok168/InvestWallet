@@ -114,12 +114,20 @@ data class RelatedSymbol(
     @SerializedName("currency-logoid")
     val currencyLogoid: String?,
     val symbol: String
-){
-    fun getURLImg(): String{
+): IUTag{
+    override fun getURLImg(): String{
         return if (logoid != null)
             "https://s3-symbol-logo.tradingview.com/$logoid--big.svg"
         else{
             ""
         }
+    }
+
+    override fun getTag(): String {
+        return symbol
+    }
+
+    override fun getDescriptions(): String {
+        return symbol
     }
 }

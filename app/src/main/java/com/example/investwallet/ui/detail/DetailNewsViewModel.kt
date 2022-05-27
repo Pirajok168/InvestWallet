@@ -17,9 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.investwallet.dto.converter.Content
-import com.example.investwallet.dto.converter.Params
-import com.example.investwallet.dto.converter.RelatedSymbol
+import com.example.investwallet.dto.converter.*
 import com.example.investwallet.repository.ApiRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -46,8 +44,10 @@ class DetailNewsViewModel @Inject constructor(
         StateDetailNews()
     )
 
+
     val stateDetailNews: StateFlow<StateDetailNews>
         get() = _stateDetailNews
+
 
 
     fun getData(isSystemInDarkTheme: Boolean){

@@ -4,11 +4,13 @@ import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,22 +33,28 @@ import com.example.investwallet.R
 import com.example.investwallet.dto.converter.newsDtoItem
 import com.example.investwallet.dto.headlines.Headline
 import com.example.investwallet.dto.headlines.RelatedSymbol
+import com.example.investwallet.ui.detail.placeholder.detailticket._PlaceHolderHeadlines
+import com.example.investwallet.ui.detail.placeholder.detailticket._PlaceholderInfo
 import com.example.investwallet.ui.theme.InvestWalletTheme
+import me.vponomarenko.compose.shimmer.shimmer
 
 @Composable
 fun DetailScreen(
     detailViewModel: DetailViewModel = hiltViewModel(),
+    tagTicket: String,
     onBack: () -> Unit,
     onClick: (headline: newsDtoItem) -> Unit
 ) {
+    LaunchedEffect(key1 = 0, block = {
+        detailViewModel.loadListDetailNews(tagTicket)
+    })
 
 
-    val headlineList = detailViewModel.headlineList.collectAsState()
-    val symbol = detailViewModel.symbol.collectAsState()
+    val state = detailViewModel.stateDetail.collectAsState()
 
 
     Scaffold(
-        topBar = { TopBarDetailScreen(symbol.value?.getDescription?:"", onBack) },
+        topBar = { TopBarDetailScreen(state.value.symbol?.getDescriptions() ?: "Загрузка", onBack) },
         modifier = Modifier.systemBarsPadding()
     ) {
             paddingValues ->
@@ -55,15 +63,28 @@ fun DetailScreen(
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState()),
         ) {
-            Info(
-                symbol.value?.getURLImg() ?: "",
-                "140 $"
-            )
 
-            Headlines(headlineList.value, onClick = {
-                detailViewModel.check(it)
-                onClick(it)
-            })
+            when(val _state = state.value.stateLoad){
+                is StateLoad.Error -> {
+
+                }
+                StateLoad.Loading -> {
+                    _PlaceholderInfo()
+                    _PlaceHolderHeadlines()
+                }
+                StateLoad.Success -> {
+                    Info(
+                        state.value.symbol?.getURLImg() ?: "",
+                        "140 $"
+                    )
+
+                    Headlines(state.value.headlineList, onClick = {
+                        detailViewModel.check(it)
+                        onClick(it)
+                    })
+                }
+            }
+
         }
     }
 }
@@ -81,6 +102,9 @@ fun TopBarDetailScreen(
         backgroundColor = MaterialTheme.colors.background
     )
 }
+
+
+
 
 @Composable
 fun Info(
@@ -118,7 +142,7 @@ fun Info(
 }
 
 @Composable
-fun Headlines(
+fun Headlines (
     listHeadline: List<newsDtoItem>,
     onClick: (headline: newsDtoItem) -> Unit
 ) {

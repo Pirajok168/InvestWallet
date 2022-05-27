@@ -52,7 +52,7 @@ import me.vponomarenko.compose.shimmer.shimmer
 fun SearchScreen(
     searchViewModel: SearchViewModel = hiltViewModel(),
     onBack: () -> Unit,
-    onOpen: () -> Unit
+    onOpen: (tag: String) -> Unit
 ) {
 
     val searchViewState = searchViewModel.searchViewState.collectAsState()
@@ -78,8 +78,8 @@ fun SearchScreen(
                             it,
                             onOpen={
                                     symbol->
-                                searchViewModel.checkSymbol(symbol)
-                                onOpen()
+                                //searchViewModel.checkSymbol(symbol)
+                                onOpen(symbol.getTag())
                             }
                         )
                     }
@@ -202,7 +202,7 @@ fun SearchCardTicket(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Surface(modifier = Modifier.weight(6f)) {
-                Log.e("logo", "https://s3-symbol-logo.tradingview.com/${ticket.logoid}--big.svg")
+                Log.e("logo", ticket.getURLImg())
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -211,7 +211,7 @@ fun SearchCardTicket(
                     ) {
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
-                                .data("https://s3-symbol-logo.tradingview.com/${ticket.logoid}--big.svg")
+                                .data(ticket.getURLImg())
                                 .decoderFactory(SvgDecoder.Factory())
                                 .crossfade(true)
                                 .build(),
@@ -225,7 +225,7 @@ fun SearchCardTicket(
                     }
                     Spacer(modifier = Modifier.size(20.dp))
                     Text(
-                        text = ticket.getDescription,
+                        text = ticket.getDescriptions(),
                         fontWeight = FontWeight.Bold,
                         maxLines = 3,
                         overflow = TextOverflow.Ellipsis,

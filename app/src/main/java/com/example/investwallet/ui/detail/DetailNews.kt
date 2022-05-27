@@ -3,7 +3,6 @@ package com.example.investwallet.ui.detail
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -11,22 +10,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material.R
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,7 +29,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
-import com.example.investwallet.dto.converter.Content
 import com.example.investwallet.ui.theme.InvestWalletTheme
 import com.google.accompanist.flowlayout.FlowRow
 
@@ -43,7 +37,8 @@ import com.google.accompanist.flowlayout.FlowRow
 fun DetailNews(
     detailNewsViewModel: DetailNewsViewModel = hiltViewModel(),
     isSystemInDarkTheme: Boolean = isSystemInDarkTheme(),
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onClick:(tag: String) -> Unit
 ) {
     val detailNews = detailNewsViewModel.stateDetailNews.collectAsState()
     LaunchedEffect(key1 = 0, block = {
@@ -94,7 +89,10 @@ fun DetailNews(
                     for (i in 0 until sizePreview.value) {
                         val it = detailNews.value.listChip[i]
                         Chip(
-                            onClick = { },
+                            onClick = {
+                                //detailNewsViewModel.loadHeadlinesChip(it)
+                                onClick(it.getTag())
+                            },
                             leadingIcon = {
                                 AsyncImage(
                                     model = ImageRequest.Builder(LocalContext.current)
@@ -198,8 +196,6 @@ fun TopBarDetailNews(
 @Composable
 fun _DetailNews() {
     InvestWalletTheme {
-        DetailNews(){
-
-        }
+        DetailNews(onClick = {}, onBack = {})
     }
 }

@@ -1,6 +1,7 @@
 package com.example.investwallet.ui
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -47,7 +48,7 @@ fun InvestWalletApp(
                 },
                 onOpen = {
                     navController.navigate(
-                        Screen.Detail.route
+                        "${Screen.Detail.route}?tag=$it"
                     ){
                         launchSingleTop = true
                     }
@@ -56,7 +57,8 @@ fun InvestWalletApp(
         }
 
         composable(
-            route = Screen.Detail.route,
+            route = "${Screen.Detail.route}?tag={tag}",
+            arguments = listOf(navArgument("tag"){ type = NavType.StringType })
         ){
                 backStackEntry ->
 
@@ -66,7 +68,8 @@ fun InvestWalletApp(
                 },
                 onClick = {
                     navController.navigate(Screen.DetailNews.route)
-                }
+                },
+                tagTicket = backStackEntry.arguments?.getString("tag", " ")!!
             )
         }
 
@@ -76,6 +79,9 @@ fun InvestWalletApp(
             DetailNews(
                 onBack = {
                     navController.popBackStack()
+                },
+                onClick = {
+                    navController.navigate("${Screen.Detail.route}?tag=$it")
                 }
             )
         }

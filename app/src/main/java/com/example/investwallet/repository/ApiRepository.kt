@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.investwallet.api.JSONHeadlinesAPI
 import com.example.investwallet.api.JSONSearchApi
 import com.example.investwallet.dto.QuoteDTO
+import com.example.investwallet.dto.converter.IUTag
 import com.example.investwallet.dto.converter.newsDtoItem
 import com.example.investwallet.dto.headlines.Headline
 import kotlinx.coroutines.Dispatchers
@@ -23,19 +24,20 @@ class ApiRepository @Inject constructor(
     private val api: JSONHeadlinesAPI
 ) {
 
-    val symbol: MutableStateFlow<QuoteDTO?> = MutableStateFlow(null)
+    val symbol: MutableStateFlow<IUTag?> = MutableStateFlow(null)
     val detailNews: MutableStateFlow<newsDtoItem?> = MutableStateFlow(null)
 
-    suspend fun getListTicket(text: String): List<QuoteDTO>{
-        return apiJSONSearch.getFindQuotes(text, "ru","stock")
+    suspend fun getListTicket(text: String, exchange: String = ""): List<QuoteDTO>{
+        return apiJSONSearch.getFindQuotes(text, "ru","stock", exchange)
     }
 
     suspend fun getHeadlines(
+        tag: String,
         category: String = "stock",
         lang: String = "ru"): List<newsDtoItem>{
-        Log.e("tag",symbol.value?.tagHttp ?: "почему")
+        Log.e("tag",tag ?: "почему")
         return try {
-            api.getHeadlines(category, lang, symbol.value?.tagHttp ?: " ")
+            api.getHeadlines(category, lang, tag)
         }catch (e: Exception){
             Log.e("tag",e.message.toString())
 
