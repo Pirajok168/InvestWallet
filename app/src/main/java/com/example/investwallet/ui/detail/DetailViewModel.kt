@@ -49,12 +49,15 @@ class DetailViewModel @Inject constructor(
         detailNews.value = _detailNews
     }
 
-    fun loadListDetailNews(_tag: String){
+    fun loadListDetailNews(
+        _tag: String,
+        _category: String
+    ){
         viewModelScope.launch(Dispatchers.IO) {
-            val list = async { repository.getHeadlines(_tag) }
+            val list = async { repository.getHeadlines(_tag, category = _category) }
             val text = _tag.split(":")
-            val _symbol = async { repository.getListTicket(text = text.last(), exchange = text.first()) }
-
+            val _symbol = async { repository.getListTicket(text = text.last(), exchange = text.first(), type= _category) }
+            Log.e("_symbol",  "$_tag --- ${list.await().toString()}")
 
             withContext(Dispatchers.IO){
                 _stateDetail.value = StateDetail(

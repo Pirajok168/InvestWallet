@@ -42,11 +42,12 @@ import me.vponomarenko.compose.shimmer.shimmer
 fun DetailScreen(
     detailViewModel: DetailViewModel = hiltViewModel(),
     tagTicket: String,
+    category: String,
     onBack: () -> Unit,
     onClick: (headline: newsDtoItem) -> Unit
 ) {
     LaunchedEffect(key1 = 0, block = {
-        detailViewModel.loadListDetailNews(tagTicket)
+        detailViewModel.loadListDetailNews(tagTicket, category)
     })
 
 

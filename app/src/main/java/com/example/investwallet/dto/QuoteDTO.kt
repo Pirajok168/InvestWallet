@@ -11,11 +11,16 @@ data class QuoteDTO(
     val type: String,
     val typespecs: List<String>?,
     val logoid: String,
+    val `base-currency-logoid`: String? = null,
     val prefix: String? = null
 ): IUTag{
 
     override fun getURLImg(): String{
-        return "https://s3-symbol-logo.tradingview.com/$logoid--big.svg"
+        return if (`base-currency-logoid` == null) {
+            "https://s3-symbol-logo.tradingview.com/$logoid--big.svg"
+        }else{
+            "https://s3-symbol-logo.tradingview.com/$`base-currency-logoid`--big.svg"
+        }
     }
 
 

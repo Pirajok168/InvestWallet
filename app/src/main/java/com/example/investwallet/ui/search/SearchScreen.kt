@@ -2,12 +2,12 @@ package com.example.investwallet.ui.search
 
 import android.util.Log
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -31,10 +31,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,7 +43,6 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.example.investwallet.R
 import com.example.investwallet.dto.QuoteDTO
-import com.example.investwallet.ui.theme.InvestWalletTheme
 import me.vponomarenko.compose.shimmer.shimmer
 
 
@@ -52,34 +51,50 @@ import me.vponomarenko.compose.shimmer.shimmer
 fun SearchScreen(
     searchViewModel: SearchViewModel = hiltViewModel(),
     onBack: () -> Unit,
-    onOpen: (tag: String) -> Unit
+    onOpen: (tag: String, category: String) -> Unit
 ) {
+    LaunchedEffect(key1 = 0, block = {
+        searchViewModel.updateList(ToolsTicket.Stocks)
+    })
 
     val searchViewState = searchViewModel.searchViewState.collectAsState()
+    val selectedList = listOf(ToolsTicket.All, ToolsTicket.Stocks, ToolsTicket.Crypto, )
+    val (selectedOption, onOptionSelected ) = remember { mutableStateOf(selectedList[1]) }
 
     Scaffold(
         topBar = { SearchTopBar(
             onBack =onBack,
             searchViewModel.searchValue.value,
-            onEditText = { searchViewModel.onSearch(it) }
+            onEditText = { searchViewModel.onSearch(it,selectedOption) }
         ) }
     ) {
             contentPadding ->
+
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             contentPadding = PaddingValues(20.dp),
             modifier = Modifier.padding(contentPadding)
         ){
 
+            item {
+                LineButton(
+                    selectedList,
+                    selectedOption = selectedOption,
+                    onOptionSelected = onOptionSelected,
+                    onClick = {
+                        searchViewModel.updateList(it)
+                    }
+                )
+            }
             when(searchViewState.value.isLoading){
                 StateSearch.EndSearch -> {
+
                     items(searchViewState.value.listSearchingTicket){
                         SearchCardTicket(
                             it,
                             onOpen={
                                     symbol->
-                                //searchViewModel.checkSymbol(symbol)
-                                onOpen(symbol.getTag())
+                                onOpen(symbol.getTag(),selectedOption.type)
                             }
                         )
                     }
@@ -97,6 +112,53 @@ fun SearchScreen(
 
         }
     }
+}
+
+
+
+
+@Composable
+fun LineButton(
+    selectedList: List<ToolsTicket>,
+    selectedOption: ToolsTicket,
+    onOptionSelected: (ToolsTicket) -> Unit,
+    onClick:(option: ToolsTicket) -> Unit
+) {
+
+
+    Row() {
+        selectedList.forEach{
+                option ->
+            val backgroundColor = if (option == selectedOption)
+                MaterialTheme.colors.primary else MaterialTheme.colors.surface
+            Row(
+                Modifier
+                    .clip(RoundedCornerShape(10.dp))
+                    .selectable(
+                        selected = (option == selectedOption),
+                        onClick = {
+                            onClick(option)
+                            onOptionSelected(option)
+                        },
+                        role = Role.Button
+                    ),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Card(
+                    backgroundColor = backgroundColor,
+                    shape = RoundedCornerShape(10.dp),
+                ) {
+                    Text(
+                        text = option.text,
+                        color = contentColorFor(backgroundColor = backgroundColor),
+                        modifier = Modifier.padding(10.dp)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.size(10.dp))
+        }
+    }
+
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -202,7 +264,7 @@ fun SearchCardTicket(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Surface(modifier = Modifier.weight(6f)) {
-                Log.e("logo", ticket.getURLImg())
+                Log.e("logo", ticket.toString())
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -298,10 +360,3 @@ fun _PlaceholderSearchCardTicket() {
 
 
 
-@Preview
-@Composable
-fun PreviewSearchScreen() {
-    InvestWalletTheme {
-        SearchScreen(onBack = {}, onOpen = {})
-    }
-}

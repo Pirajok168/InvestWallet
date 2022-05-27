@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.FieldPosition
+import java.util.prefs.AbstractPreferences
 import javax.inject.Inject
 
 
@@ -26,9 +28,14 @@ sealed class StateSearch{
 
 data class SearchViewState(
     val listSearchingTicket: List<QuoteDTO> = emptyList(),
-
-    val isLoading: StateSearch = StateSearch.LoadingSearch
+    val isLoading: StateSearch = StateSearch.LoadingSearch,
 )
+
+sealed class ToolsTicket(val type: String, val text: String, val position: Int){
+    object All: ToolsTicket("", "Все", 0)
+    object Stocks: ToolsTicket("stock", "Акции", 1)
+    object Crypto: ToolsTicket("crypto", "Криптовалюты", 2)
+}
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
@@ -41,29 +48,27 @@ class SearchViewModel @Inject constructor(
     val searchViewState: StateFlow<SearchViewState>
         get() = _searchViewState
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            val list = async { repository.getListTicket("") }
 
 
 
+
+    fun updateList(toolsTicket: ToolsTicket){
+        _searchViewState.value = SearchViewState()
+        viewModelScope.launch (Dispatchers.IO){
+            val list = async { repository.getListTicket("", type = toolsTicket.type) }
             withContext(Dispatchers.Main){
                 _searchViewState.value = SearchViewState(list.await(), StateSearch.EndSearch)
             }
         }
     }
 
-    fun checkSymbol(_symbol: QuoteDTO){
-        symbol.value = _symbol
-    }
-
-    fun onSearch(newValue: String){
+    fun onSearch(newValue: String, selectedOption: ToolsTicket){
         viewModelScope.launch (Dispatchers.IO){
             withContext(Dispatchers.Main){
                 searchValue.value = newValue
             }
 
-            val list  = repository.getListTicket(newValue)
+            val list  = repository.getListTicket(newValue, type = selectedOption.type)
 
             withContext(Dispatchers.Main){
                 val state = if (list.isEmpty()){

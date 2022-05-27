@@ -47,8 +47,9 @@ fun InvestWalletApp(
                     navController.popBackStack()
                 },
                 onOpen = {
+                    tag: String, category: String ->
                     navController.navigate(
-                        "${Screen.Detail.route}?tag=$it"
+                        "${Screen.Detail.route}?tag=$tag&category=$category"
                     ){
                         launchSingleTop = true
                     }
@@ -57,8 +58,11 @@ fun InvestWalletApp(
         }
 
         composable(
-            route = "${Screen.Detail.route}?tag={tag}",
-            arguments = listOf(navArgument("tag"){ type = NavType.StringType })
+            route = "${Screen.Detail.route}?tag={tag}&category={category}",
+            arguments = listOf(
+                navArgument("tag"){ type = NavType.StringType },
+                navArgument("category"){ type = NavType.StringType },
+            )
         ){
                 backStackEntry ->
 
@@ -69,7 +73,8 @@ fun InvestWalletApp(
                 onClick = {
                     navController.navigate(Screen.DetailNews.route)
                 },
-                tagTicket = backStackEntry.arguments?.getString("tag", " ")!!
+                tagTicket = backStackEntry.arguments?.getString("tag", " ")!!,
+                category = backStackEntry.arguments?.getString("category", " ")!!,
             )
         }
 

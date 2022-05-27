@@ -27,8 +27,8 @@ class ApiRepository @Inject constructor(
     val symbol: MutableStateFlow<IUTag?> = MutableStateFlow(null)
     val detailNews: MutableStateFlow<newsDtoItem?> = MutableStateFlow(null)
 
-    suspend fun getListTicket(text: String, exchange: String = ""): List<QuoteDTO>{
-        return apiJSONSearch.getFindQuotes(text, "ru","stock", exchange)
+    suspend fun getListTicket(text: String, exchange: String = "", type: String = "stock"): List<QuoteDTO>{
+        return apiJSONSearch.getFindQuotes(text, "ru",type, exchange)
     }
 
     suspend fun getHeadlines(
