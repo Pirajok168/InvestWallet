@@ -4,10 +4,8 @@ import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,7 +13,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
@@ -31,23 +28,21 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.example.investwallet.R
 import com.example.investwallet.dto.converter.newsDtoItem
-import com.example.investwallet.dto.headlines.Headline
-import com.example.investwallet.dto.headlines.RelatedSymbol
 import com.example.investwallet.ui.detail.placeholder.detailticket._PlaceHolderHeadlines
 import com.example.investwallet.ui.detail.placeholder.detailticket._PlaceholderInfo
 import com.example.investwallet.ui.theme.InvestWalletTheme
-import me.vponomarenko.compose.shimmer.shimmer
 
 @Composable
 fun DetailScreen(
     detailViewModel: DetailViewModel = hiltViewModel(),
     tagTicket: String,
     category: String,
+    country: String,
     onBack: () -> Unit,
     onClick: (headline: newsDtoItem) -> Unit
 ) {
     LaunchedEffect(key1 = 0, block = {
-        detailViewModel.loadListDetailNews(tagTicket, category)
+        detailViewModel.loadListDetailNews(tagTicket, category, country)
     })
 
 
@@ -76,7 +71,7 @@ fun DetailScreen(
                 StateLoad.Success -> {
                     Info(
                         state.value.symbol?.getURLImg() ?: "",
-                        "140 $"
+                        state.value.price
                     )
 
                     Headlines(state.value.headlineList, onClick = {
@@ -112,6 +107,7 @@ fun Info(
     urlImg: String,
     price: String
 ) {
+    Log.e("it.getURLImg()", "Info -- $urlImg")
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -197,7 +193,7 @@ fun ItemNews(
 
                 for (i in 0 until sizeIcons){
                     val symbol = headline.relatedSymbols[i]
-
+                    Log.e("it.getURLImg()", "ItemNews -- ${symbol.getURLImg()}")
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
                             .data(symbol.getURLImg())

@@ -1,7 +1,7 @@
 package com.example.investwallet.api
 
 import com.example.investwallet.dto.converter.newsDtoItem
-import com.example.investwallet.dto.headlines.Headline
+
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Query

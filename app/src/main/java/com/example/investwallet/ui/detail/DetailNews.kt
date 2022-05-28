@@ -90,8 +90,7 @@ fun DetailNews(
                         val it = detailNews.value.listChip[i]
                         Chip(
                             onClick = {
-                                //detailNewsViewModel.loadHeadlinesChip(it)
-
+                                Log.e("it.getURLImg()", it.getTag())
                                 onClick(it.getTag())
                             },
                             leadingIcon = {
