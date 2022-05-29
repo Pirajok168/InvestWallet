@@ -38,6 +38,8 @@ import com.example.investwallet.ui.theme.InvestWalletTheme
 import com.example.investwallet.R
 import com.example.investwallet.database.FavoriteTicket
 import com.example.investwallet.dto.converter.IUTag
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -92,7 +94,8 @@ fun Home(
     })
 
     val format = SimpleDateFormat("H:MM, EEE, MMM d")
-    val listFavoriteTicket =homeViewModel.listFavoriteTicket.collectAsState(initial = emptyList())
+    val listFavoriteTicket = homeViewModel.stateHome.collectAsState()
+
     Scaffold(
         backgroundColor = MaterialTheme.colors.background,
         topBar = {
@@ -121,7 +124,7 @@ fun Home(
             )
 
             FavoriteList(
-                listFavoriteTicket.value,
+                listFavoriteTicket.value.listFavoriteTicket,
                 onSeeAll = { TODO() },
                 onOpenTicket = onDetail
             )
@@ -283,6 +286,7 @@ fun FavoriteList(
         horizontalArrangement=Arrangement.spacedBy(20.dp)
     ){
         items(favoriteList){
+            Log.e("price", it.price)
             CardTicket(
                 it,
                 onOpenTicket={
@@ -297,8 +301,8 @@ fun FavoriteList(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CardTicket(
-    ticket: IUTag,
-    onOpenTicket: (ticket: IUTag) -> Unit
+    ticket: FavoriteTicket,
+    onOpenTicket: (ticket: FavoriteTicket) -> Unit
 ) {
     Card(
         onClick = { onOpenTicket(ticket) },
@@ -307,7 +311,7 @@ fun CardTicket(
             .height(200.dp),
         shape = RoundedCornerShape(20.dp)
     ) {
-        Log.e("tag_fa",ticket.getURLImg())
+
         Box(modifier = Modifier
             .fillMaxSize()
             .padding(20.dp), contentAlignment = Alignment.TopStart){
@@ -342,25 +346,19 @@ fun CardTicket(
             }
         }
 
-        /*Box(modifier = Modifier
+
+
+        Box(modifier = Modifier
             .fillMaxSize()
             .padding(20.dp), contentAlignment = Alignment.BottomStart){
             Column {
                 Text(
-                    text = ,
+                    text = ticket.price,
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 25.sp
                 )
-                Spacer(modifier = Modifier.size(10.dp))
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    Text(
-                        text = ticket.amountOnTheAccount.toString(),
-                        fontSize = 18.sp,
-                        color = Color.LightGray
-                    )
-                }
             }
-        }*/
+        }
 
     }
 }

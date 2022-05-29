@@ -67,7 +67,9 @@ class DetailViewModel @Inject constructor(
                             userOwnerId = 1,
                             symbol = _symbol.symbol,
                             logoid = _symbol.logoid,
-                            base_currency_logoid = _symbol.`base-currency-logoid`
+                            base_currency_logoid = _symbol.`base-currency-logoid`,
+                            country = _symbol.country ?: "",
+                            exchange = _symbol.exchange
                         )
                     )
                 }else{

@@ -1,11 +1,17 @@
 package com.example.investwallet.database
 
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.Relation
+import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.room.*
 import com.example.investwallet.dto.converter.IUTag
-
+import com.example.investwallet.repository.ApiRepository
+import com.example.investwallet.repository.StateCollectData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 
 @Entity(tableName = "favoriteTicket")
@@ -19,7 +25,15 @@ data class FavoriteTicket(
     val prefix: String? = null,
     var exchange: String = "",
     var symbol: String = "",
+    var country: String = ""
 ): IUTag{
+    @Ignore var price: String = ""
+
+
+
+
+
+
     override fun getURLImg(): String{
         return if (base_currency_logoid == null) {
             "https://s3-symbol-logo.tradingview.com/$logoid--big.svg"
@@ -40,7 +54,7 @@ data class FavoriteTicket(
     }
 
     override fun getTag(): String {
-        return ""
+        return "${replace(exchange)}:${replace(symbol)}".uppercase()
     /* return if (typespecs?.firstOrNull() == "etf" && prefix != null){
             "${replace(prefix)}:${replace(symbol)}".uppercase()
         }else{
@@ -51,6 +65,8 @@ data class FavoriteTicket(
     override fun getDescriptions(): String {
         return replace(description)
     }
+
+
 
 }
 
