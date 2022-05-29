@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.investwallet.database.ActiveUser
 import com.example.investwallet.database.User
 import com.example.investwallet.repository.ApiRepository
+import com.example.investwallet.repository.DatabaseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -13,9 +14,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: ApiRepository
+    private val databaseRepository: DatabaseRepository
 ): ViewModel() {
-     val listFavoriteTicket = repository.listFavoriteTicket
+     val listFavoriteTicket = databaseRepository.listFavoriteTicket
 
     fun create(){
         /*viewModelScope.launch(Dispatchers.IO) {

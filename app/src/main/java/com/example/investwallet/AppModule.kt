@@ -9,6 +9,7 @@ import com.example.investwallet.database.UserDatabase
 import com.example.investwallet.dto.converter.Content
 import com.example.investwallet.dto.converter.ContentHolderTypeAdapter
 import com.example.investwallet.repository.ApiRepository
+import com.example.investwallet.repository.DatabaseRepository
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
@@ -86,8 +87,14 @@ object AppModule {
     fun provideApiRepository(
         @Named("apiJSONSearch") apiJSONSearch: JSONSearchApi,
         @Named("apiJSONHeadlines") apiJSONHeadlines: JSONHeadlinesAPI,
-        @Named("databaseUser") databaseUserDatabase: UserDatabase,
         @Named("postApi") postJSONApi: PostJSONApi
-    ): ApiRepository = ApiRepository(apiJSONSearch,apiJSONHeadlines, databaseUserDatabase,postJSONApi)
+    ): ApiRepository = ApiRepository(apiJSONSearch,apiJSONHeadlines, postJSONApi)
+
+
+    @Singleton
+    @Provides
+    fun provideDatabaseRepository(
+        @Named("databaseUser") databaseUserDatabase: UserDatabase,
+    ):DatabaseRepository = DatabaseRepository(databaseUserDatabase)
 
 }

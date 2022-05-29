@@ -11,6 +11,7 @@ import com.example.investwallet.dto.converter.IUTag
 import com.example.investwallet.dto.converter.newsDtoItem
 
 import com.example.investwallet.repository.ApiRepository
+import com.example.investwallet.repository.DatabaseRepository
 import com.example.investwallet.repository.StateCollectData
 import com.example.investwallet.ui.search.SearchViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,7 +38,8 @@ data class StateDetail(
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    private val repository: ApiRepository
+    private val repository: ApiRepository,
+    private val databaseRepository: DatabaseRepository
 ) : ViewModel() {
 
 
@@ -57,7 +59,7 @@ class DetailViewModel @Inject constructor(
     private var _databaseFavoriteTicket: FavoriteTicket? = null
     fun onFavorite(isFavoriteTicket: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            with(repository) {
+            with(databaseRepository) {
                 if(isFavoriteTicket){
                     insertFavoriteTicket(
                         FavoriteTicket(
@@ -104,7 +106,6 @@ class DetailViewModel @Inject constructor(
                         repository.collectDataForShareAmerica(_tag)
                     }
                     else -> {
-
                         repository.collectDataForShareAmerica(_tag)
                     }
                 }
@@ -112,7 +113,7 @@ class DetailViewModel @Inject constructor(
             }
             _symbol = _symbolSearch.await().first()
             val _databaseFavoriteTicketJob = async {
-                 repository.getFavorite(_symbol.symbol)
+                databaseRepository.getFavorite(_symbol.symbol)
             }
 
 
