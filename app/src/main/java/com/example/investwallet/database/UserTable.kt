@@ -18,14 +18,15 @@ import javax.inject.Inject
 data class FavoriteTicket(
     @PrimaryKey val id: Int,
     val userOwnerId: Int,
-    val logoid: String ="",
+    val logoid: String? ="",
     val base_currency_logoid: String? = null,
     val typespecs: String? = null,
     val description: String = "",
     val prefix: String? = null,
     var exchange: String = "",
     var symbol: String = "",
-    var country: String = ""
+    var country: String = "",
+    var type: String
 ): IUTag{
     @Ignore var price: String = ""
 

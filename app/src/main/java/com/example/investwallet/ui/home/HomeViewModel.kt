@@ -69,7 +69,7 @@ class HomeViewModel @Inject constructor(
                     repository.collectDataForShareAmerica(_favoriteTicket.getTag())
                 }
                 else -> {
-                    repository.collectDataForShareAmerica(_favoriteTicket.getTag())
+                    repository.collectDataForCrypto(_favoriteTicket.getTag())
                 }
             }
         }
@@ -83,45 +83,15 @@ class HomeViewModel @Inject constructor(
             is StateCollectData.RussiaStock ->{
                 "${state.answerDTO.data?.first()?.d.first()} ${state.symbol}"
             }
+            is StateCollectData.CryptoStock -> {
+                "${state.symbol} ${state.answerDTO.data.first().d.first()}"
+            }
         }
         withContext(Dispatchers.Main){
             formatPrice
         }
     }
 
-    suspend fun checkPrice(_favoriteTicket: FavoriteTicket): String {
-        viewModelScope.launch(Dispatchers.IO) {
-            val favoriteTicket = async {
-                when (_favoriteTicket.country){
-                    "RU"->{
-                        repository.collectDataForShareRussia(_favoriteTicket.getTag())
-                    }
-                    "US" ->{
-                        repository.collectDataForShareAmerica(_favoriteTicket.getTag())
-                    }
-                    else -> {
-                        repository.collectDataForShareAmerica(_favoriteTicket.getTag())
-                    }
-                }
-            }
-            val formatPrice = when(val state = favoriteTicket.await()){
-                is StateCollectData.Error -> {
-                    " "
-                }
-                is StateCollectData.AmericaStock -> {
-                    "${state.symbol} ${state.answerDTO.data.first().d.first()}"
-                }
-                is StateCollectData.RussiaStock ->{
-                    "${state.answerDTO.data?.first()?.d.first()} ${state.symbol}"
-                }
-            }
-            Log.e("_favoriteTicket", formatPrice)
-
-            formatPrice
-        }
-
-        return ""
-    }
 
     fun create(){
         viewModelScope.launch(Dispatchers.IO) {

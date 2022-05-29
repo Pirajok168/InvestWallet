@@ -69,7 +69,8 @@ class DetailViewModel @Inject constructor(
                             logoid = _symbol.logoid,
                             base_currency_logoid = _symbol.`base-currency-logoid`,
                             country = _symbol.country ?: "",
-                            exchange = _symbol.exchange
+                            exchange = _symbol.exchange,
+                            type = _symbol.type
                         )
                     )
                 }else{
@@ -108,7 +109,7 @@ class DetailViewModel @Inject constructor(
                         repository.collectDataForShareAmerica(_tag)
                     }
                     else -> {
-                        repository.collectDataForShareAmerica(_tag)
+                        repository.collectDataForCrypto(_tag)
                     }
                 }
 
@@ -128,6 +129,9 @@ class DetailViewModel @Inject constructor(
                 }
                 is StateCollectData.RussiaStock ->{
                     "${state.answerDTO.data?.first()?.d.first()} ${state.symbol}"
+                }
+                is StateCollectData.CryptoStock -> {
+                    "${state.symbol} ${state.answerDTO.data.first().d.first()}"
                 }
             }
             _databaseFavoriteTicket = _databaseFavoriteTicketJob.await()
