@@ -34,7 +34,7 @@ fun InvestWalletApp(
                     }
                 },
                 onDetail = {
-                    navController.navigate(Screen.Detail.route){
+                    navController.navigate("${Screen.Detail.route}?tag=${it.getTag()}&category=stock&country=${it.country}"){
                         launchSingleTop = true
                     }
                 }

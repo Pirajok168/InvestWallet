@@ -37,9 +37,6 @@ import coil.request.ImageRequest
 import com.example.investwallet.ui.theme.InvestWalletTheme
 import com.example.investwallet.R
 import com.example.investwallet.database.FavoriteTicket
-import com.example.investwallet.dto.converter.IUTag
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
 import me.vponomarenko.compose.shimmer.shimmer
 import java.text.SimpleDateFormat
 import java.util.*
@@ -88,7 +85,7 @@ object SampleData{
 fun Home(
     homeViewModel: HomeViewModel = hiltViewModel(),
     onSearch: () -> Unit,
-    onDetail: (ticket: Ticket) -> Unit
+    onDetail: (ticket: FavoriteTicket) -> Unit
 ) {
     LaunchedEffect(key1 = 0, block = {
         homeViewModel.create()
@@ -213,7 +210,7 @@ fun AccountMany(
 fun Portfolio(
     listPortfolio: List<Ticket>,
     onSeeAll: () -> Unit,
-    onOpenTicket: (ticket: Ticket) -> Unit
+    onOpenTicket: (ticket: FavoriteTicket) -> Unit
 ) {
    /* Row(
         modifier = Modifier
@@ -256,7 +253,7 @@ fun Portfolio(
 fun FavoriteList(
     favoriteList: List<FavoriteTicket>,
     onSeeAll: () -> Unit,
-    onOpenTicket: (ticket: Ticket) -> Unit
+    onOpenTicket: (ticket: FavoriteTicket) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -302,9 +299,7 @@ fun FavoriteList(
                 Log.e("price", it.price)
                 CardTicket(
                     it,
-                    onOpenTicket={
-
-                    }
+                    onOpenTicket=onOpenTicket
                 )
             }
         }
