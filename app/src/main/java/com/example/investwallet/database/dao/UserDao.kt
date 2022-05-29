@@ -1,10 +1,7 @@
 package com.example.investwallet.database.dao
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Transaction
+import androidx.room.*
 import com.example.investwallet.database.ActiveUser
 import com.example.investwallet.database.FavoriteTicket
 import com.example.investwallet.database.User
@@ -36,4 +33,15 @@ interface UserDao {
 
     @Insert
     suspend fun insertFavoriteTicket(ticket: FavoriteTicket)
+
+
+    @Delete
+    suspend fun deleteFavoriteTicket(ticket: FavoriteTicket)
+
+
+    @Query("SELECT * FROM favoriteTicket")
+    fun getLisFavorite(): Flow<List<FavoriteTicket>>
+
+    @Query("SELECT * FROM favoriteTicket WHERE symbol=(:symbol)")
+    suspend fun getTicket(symbol: String): FavoriteTicket?
 }

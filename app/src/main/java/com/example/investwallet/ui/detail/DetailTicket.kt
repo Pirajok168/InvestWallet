@@ -1,18 +1,19 @@
 package com.example.investwallet.ui.detail
 
 import android.util.Log
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
@@ -50,7 +51,16 @@ fun DetailScreen(
 
 
     Scaffold(
-        topBar = { TopBarDetailScreen(state.value.symbol?.getDescriptions() ?: "Загрузка", onBack) },
+        topBar = {
+            TopBarDetailScreen(
+                state.value.symbol?.getDescriptions() ?: "Загрузка",
+                onBack,
+                onFavoriteTicket = {
+                    detailViewModel.onFavorite(it)
+                },
+                isFavorite = state.value.isFavorite
+            )
+         },
         modifier = Modifier.systemBarsPadding()
     ) {
             paddingValues ->
@@ -88,14 +98,30 @@ fun DetailScreen(
 @Composable
 fun TopBarDetailScreen(
     label: String,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onFavoriteTicket: (checked: Boolean) -> Unit,
+    isFavorite: MutableState<Boolean>,
 ) {
+
+    Log.e("_databaseFavoriteTicket", isFavorite.value.toString())
     TopAppBar(
         title = { Text(text = label,  fontWeight = FontWeight.Bold) },
         navigationIcon = { IconButton(onClick = { onBack() }) {
             Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "")
         } },
-        backgroundColor = MaterialTheme.colors.background
+        backgroundColor = MaterialTheme.colors.background,
+        actions = {
+            IconToggleButton(
+                checked = isFavorite.value,
+                onCheckedChange = {
+                    isFavorite.value = it
+                    onFavoriteTicket(isFavorite.value)
+                }
+            ) {
+                val tint by animateColorAsState(if (isFavorite.value) Color(0xFFEC407A) else Color(0xFFB0BEC5))
+                Icon(Icons.Filled.Favorite, contentDescription = "Localized description", tint = tint)
+            }
+        }
     )
 }
 

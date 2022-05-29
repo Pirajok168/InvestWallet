@@ -43,13 +43,28 @@ class ApiRepository @Inject constructor(
     private val postJSONApi: PostJSONApi
 ) {
 
-    val dao = databaseUserDatabase.userDao()
+    private val dao = databaseUserDatabase.userDao()
 
     val symbol: MutableStateFlow<IUTag?> = MutableStateFlow(null)
     val detailNews: MutableStateFlow<newsDtoItem?> = MutableStateFlow(null)
 
+    val listFavoriteTicket = dao.getLisFavorite()
 
+    suspend fun insertActiveUser(user: ActiveUser){
+        dao.insertActiveUser(user)
+    }
 
+    suspend fun insertFavoriteTicket(ticket: FavoriteTicket){
+        dao.insertFavoriteTicket(ticket)
+    }
+
+    suspend fun deleteFavoriteTicket(ticket: FavoriteTicket){
+        dao.deleteFavoriteTicket(ticket)
+    }
+
+    suspend fun getFavorite(symbol: String): FavoriteTicket?{
+       return dao.getTicket(symbol)
+    }
 
     suspend fun getListTicket(text: String, exchange: String = "", type: String = "stock"): List<QuoteDTO>{
         return apiJSONSearch.getFindQuotes(text, "ru",type, exchange)

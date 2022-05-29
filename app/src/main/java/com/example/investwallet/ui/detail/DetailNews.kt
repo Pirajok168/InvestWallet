@@ -12,6 +12,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
+import com.example.investwallet.database.FavoriteTicket
 import com.example.investwallet.ui.theme.InvestWalletTheme
 import com.google.accompanist.flowlayout.FlowRow
 
@@ -46,11 +48,17 @@ fun DetailNews(
     })
 
 
-    Surface(
+    Scaffold(
         modifier = Modifier
             .systemBarsPadding()
             .fillMaxSize(),
-        color = MaterialTheme.colors.background,
+        backgroundColor = MaterialTheme.colors.background,
+        topBar = {
+            TopBarDetailNews(
+                detailNews.value.label,
+                onBack = onBack
+            )
+        }
     ) {
         if (detailNews.value.title.isNotEmpty()) {
 
@@ -180,7 +188,7 @@ fun DetailNews(
 @Composable
 fun TopBarDetailNews(
     label: String,
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
     TopAppBar(
         title = { Text(text = label,  fontWeight = FontWeight.Bold) },
@@ -188,7 +196,7 @@ fun TopBarDetailNews(
             Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "")
         } },
         backgroundColor = MaterialTheme.colors.background,
-        elevation = 0.dp
+        elevation = 0.dp,
     )
 }
 

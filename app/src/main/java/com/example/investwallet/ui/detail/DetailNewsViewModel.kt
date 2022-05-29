@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.investwallet.database.FavoriteTicket
 import com.example.investwallet.dto.converter.*
 import com.example.investwallet.repository.ApiRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,7 +33,9 @@ import javax.inject.Inject
 data class StateDetailNews(
     val annotationText: List<AnnotatedString> = emptyList(),
     val title: String = "",
+    val label: String = "",
     val listChip: List<RelatedSymbol> = emptyList(),
+    val isFavoriteTicket: Boolean = false
 )
 
 @HiltViewModel
@@ -51,6 +54,7 @@ class DetailNewsViewModel @Inject constructor(
 
 
     fun getData(isSystemInDarkTheme: Boolean){
+
         viewModelScope.launch(Dispatchers.IO){
             val listAnnotatedString: MutableList<AnnotatedString> = mutableListOf()
             val listChip: MutableList<RelatedSymbol> = mutableListOf()
@@ -100,9 +104,11 @@ class DetailNewsViewModel @Inject constructor(
 
             withContext(Dispatchers.Main){
                 _stateDetailNews.value = StateDetailNews(
-                    listAnnotatedString,
-                    detailNews.value?.title ?: " ",
-                    listChip
+                    annotationText = listAnnotatedString,
+                    title = detailNews.value?.title ?: " ",
+                    listChip = listChip,
+                    isFavoriteTicket = false,
+                    label = "Новости"
                 )
             }
         }

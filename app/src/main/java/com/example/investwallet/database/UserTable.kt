@@ -27,6 +27,11 @@ data class FavoriteTicket(
             "https://s3-symbol-logo.tradingview.com/$base_currency_logoid--big.svg"
         }
     }
+
+    override fun getSymbols(): String {
+        return replace(symbol)
+    }
+
     private fun replace(str: String): String{
         var newStr = str
         newStr = newStr.replace("<em>", "")
@@ -46,6 +51,7 @@ data class FavoriteTicket(
     override fun getDescriptions(): String {
         return replace(description)
     }
+
 }
 
 
