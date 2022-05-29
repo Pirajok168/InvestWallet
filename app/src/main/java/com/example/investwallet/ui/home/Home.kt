@@ -40,6 +40,7 @@ import com.example.investwallet.database.FavoriteTicket
 import com.example.investwallet.dto.converter.IUTag
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import me.vponomarenko.compose.shimmer.shimmer
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -285,14 +286,27 @@ fun FavoriteList(
         contentPadding = PaddingValues(20.dp),
         horizontalArrangement=Arrangement.spacedBy(20.dp)
     ){
-        items(favoriteList){
-            Log.e("price", it.price)
-            CardTicket(
-                it,
-                onOpenTicket={
+        if(favoriteList.isEmpty()){
+            items(5){
+                Card(
+                    modifier = Modifier
+                        .width(300.dp)
+                        .height(200.dp)
+                        .shimmer(),
+                    shape = RoundedCornerShape(20.dp),
+                    backgroundColor = Color(0xFFF3F3F3)
+                ) {}
+            }
+        }else{
+            items(favoriteList){
+                Log.e("price", it.price)
+                CardTicket(
+                    it,
+                    onOpenTicket={
 
-                }
-            )
+                    }
+                )
+            }
         }
     }
 }
