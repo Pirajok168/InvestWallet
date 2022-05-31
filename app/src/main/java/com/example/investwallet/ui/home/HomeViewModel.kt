@@ -60,6 +60,7 @@ class HomeViewModel @Inject constructor(
 
 
     suspend fun loadPrice(_favoriteTicket: FavoriteTicket): String = runBlocking(Dispatchers.IO)  {
+        Log.e("_favoriteTicket", _favoriteTicket.toString())
         val favoriteTicket = async {
             when (_favoriteTicket.country){
                 "RU"->{

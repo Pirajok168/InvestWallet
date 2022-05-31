@@ -70,7 +70,9 @@ class DetailViewModel @Inject constructor(
                             base_currency_logoid = _symbol.`base-currency-logoid`,
                             country = _symbol.country ?: "",
                             exchange = _symbol.exchange,
-                            type = _symbol.type
+                            type = _symbol.type,
+                            typespecs = _symbol.typespecs?.firstOrNull(),
+                            prefix = _symbol.prefix
                         )
                     )
                 }else{

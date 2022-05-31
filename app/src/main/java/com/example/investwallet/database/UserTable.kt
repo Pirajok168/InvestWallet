@@ -55,12 +55,11 @@ data class FavoriteTicket(
     }
 
     override fun getTag(): String {
-        return "${replace(exchange)}:${replace(symbol)}".uppercase()
-    /* return if (typespecs?.firstOrNull() == "etf" && prefix != null){
+        return if (typespecs == "etf" && prefix != null){
             "${replace(prefix)}:${replace(symbol)}".uppercase()
         }else{
             "${replace(exchange)}:${replace(symbol)}".uppercase()
-        }*/
+        }
     }
 
     override fun getDescriptions(): String {
