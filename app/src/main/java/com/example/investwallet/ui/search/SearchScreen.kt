@@ -198,6 +198,13 @@ fun CardSources(
     source: Sources,
     onClick: (exchange: Sources ) -> Unit
 ) {
+    val model = ImageRequest.Builder(LocalContext.current)
+        .data("https://s3-symbol-logo.tradingview.com/country/${source.logo}.svg")
+        .decoderFactory(SvgDecoder.Factory())
+        .crossfade(true)
+        .build()
+
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         onClick = { onClick(source) }
@@ -209,11 +216,7 @@ fun CardSources(
 
             if (source.logo.isNotEmpty()){
                 AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data("https://s3-symbol-logo.tradingview.com/country/${source.logo}.svg")
-                        .decoderFactory(SvgDecoder.Factory())
-                        .crossfade(true)
-                        .build(),
+                    model = model,
                     contentDescription = "",
                     modifier = Modifier
                         .size(30.dp)

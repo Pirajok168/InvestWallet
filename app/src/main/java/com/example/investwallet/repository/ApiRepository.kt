@@ -57,7 +57,7 @@ class ApiRepository @Inject constructor(
 
     suspend fun collectDataForShareAmerica(ticket:String): StateCollectData{
         return try {
-            val post =postJSONApi.collectDataForShareAmerica(
+            val post = postJSONApi.collectDataForShareAmerica(
                 PostDTO(
                     columns=listOf("close"),
                     symbols= Symbols(
@@ -68,6 +68,7 @@ class ApiRepository @Inject constructor(
                     )
                 )
             )
+            Log.e("error", "${post}")
             StateCollectData.AmericaStock(post, "$")
         }catch (e: java.lang.Exception){
             e.printStackTrace()
@@ -108,7 +109,13 @@ class ApiRepository @Inject constructor(
                     )
                 )
             )
-            StateCollectData.IndiaStock(post, "₹")
+            val state = if (post.totalCount == 0){
+                StateCollectData.Error("Ошибка")
+            }else{
+                StateCollectData.IndiaStock(post, "₹")
+            }
+            state
+
         }catch (e: java.lang.Exception){
             e.printStackTrace()
             StateCollectData.Error("Неизвестная ошибка")

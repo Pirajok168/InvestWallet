@@ -114,7 +114,7 @@ class DetailViewModel @Inject constructor(
                         repository.collectDataForShareIndia(_tag)
                     }
                     else -> {
-                        repository.collectDataForCrypto(_tag)
+                        repository.collectDataForShareAmerica(_tag)
                     }
                 }
 
@@ -127,7 +127,7 @@ class DetailViewModel @Inject constructor(
 
             val formatPrice = when(val state = quoteDTO.await()){
                 is StateCollectData.Error -> {
-                    " "
+                    state.message
                 }
                 is StateCollectData.AmericaStock -> {
                     "${state.symbol} ${state.answerDTO.data.first().d.first()}"

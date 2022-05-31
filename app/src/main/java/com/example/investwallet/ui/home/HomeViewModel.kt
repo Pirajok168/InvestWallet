@@ -44,15 +44,9 @@ class HomeViewModel @Inject constructor(
         val _listData = mutableListOf<FavoriteTicket>()
         _istFavoriteTicket.forEach {
                 _favorite ->
-            if (_favorite.price.isEmpty()){
-                val price = loadPrice(_favorite)
-                _favorite.price = price
-                _listData.add(_favorite)
-            }else{
-                _listData.add(_favorite)
-            }
+            _favorite.price = loadPrice(_favorite)
+            _listData.add(_favorite)
         }
-        Log.e("_listData", _listData.toString())
         emit(HomeState(_listData, StateLoad.SUCCESS))
 
     }.stateIn(
