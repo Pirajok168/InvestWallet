@@ -19,4 +19,8 @@ interface PostJSONApi {
     @Headers("Content-Type: application/x-www-form-urlencoded")
     @POST("/crypto/scan")
     suspend fun collectDataForShareCrypto(@Body dto: PostDTO): AnswerDTO
+
+    @Headers("Content-Type: application/x-www-form-urlencoded")
+    @POST("/india/scan")
+    suspend fun collectDataForShareIndia(@Body dto: PostDTO): AnswerDTO
 }

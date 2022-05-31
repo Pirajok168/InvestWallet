@@ -34,6 +34,7 @@ sealed class StateCollectData(){
     data class RussiaStock(val answerDTO: AnswerDTO, val symbol: String): StateCollectData()
     data class AmericaStock(val answerDTO: AnswerDTO, val symbol: String): StateCollectData()
     data class CryptoStock(val answerDTO: AnswerDTO, val symbol: String): StateCollectData()
+    data class IndiaStock(val answerDTO: AnswerDTO, val symbol: String): StateCollectData()
     data class Error(val message: String): StateCollectData()
 }
 
@@ -88,6 +89,26 @@ class ApiRepository @Inject constructor(
                 )
             )
             StateCollectData.RussiaStock(post, "₽")
+        }catch (e: java.lang.Exception){
+            e.printStackTrace()
+            StateCollectData.Error("Неизвестная ошибка")
+        }
+    }
+
+    suspend fun collectDataForShareIndia(ticket:String): StateCollectData{
+        return try {
+            val post =postJSONApi.collectDataForShareIndia(
+                PostDTO(
+                    columns=listOf("close"),
+                    symbols= Symbols(
+                        tickers= listOf(ticket),
+                        query = Query(
+                            types= listOf()
+                        )
+                    )
+                )
+            )
+            StateCollectData.IndiaStock(post, "₹")
         }catch (e: java.lang.Exception){
             e.printStackTrace()
             StateCollectData.Error("Неизвестная ошибка")
