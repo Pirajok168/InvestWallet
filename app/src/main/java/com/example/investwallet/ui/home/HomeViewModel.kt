@@ -69,6 +69,9 @@ class HomeViewModel @Inject constructor(
                 "US" ->{
                     repository.collectDataForShareAmerica(_favoriteTicket.getTag())
                 }
+                "IN" ->{
+                    repository.collectDataForShareIndia(_favoriteTicket.getTag())
+                }
                 else -> {
                     repository.collectDataForCrypto(_favoriteTicket.getTag())
                 }
@@ -85,6 +88,9 @@ class HomeViewModel @Inject constructor(
                 "${state.answerDTO.data?.first()?.d.first()} ${state.symbol}"
             }
             is StateCollectData.CryptoStock -> {
+                "${state.symbol} ${state.answerDTO.data.first().d.first()}"
+            }
+            is StateCollectData.IndiaStock -> {
                 "${state.symbol} ${state.answerDTO.data.first().d.first()}"
             }
         }
