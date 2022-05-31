@@ -49,7 +49,9 @@ class SearchViewModel @Inject constructor(
     val searchViewState: StateFlow<SearchViewState>
         get() = _searchViewState
 
-
+    init {
+        Log.e("SearchViewModel", "тык")
+    }
 
 
 

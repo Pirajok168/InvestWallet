@@ -52,7 +52,7 @@ import me.vponomarenko.compose.shimmer.shimmer
 import javax.xml.transform.Source
 
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SearchScreen(
     searchViewModel: SearchViewModel = hiltViewModel(),
@@ -69,7 +69,7 @@ fun SearchScreen(
     val drawerState = rememberBottomDrawerState(BottomDrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val exchange: MutableState<Sources> =  remember { mutableStateOf(Sources.AllSources) }
-
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     BottomDrawer(
         gesturesEnabled = false,
@@ -94,6 +94,7 @@ fun SearchScreen(
                     onSettings = {
                         scope.launch {
                             drawerState.open()
+                            keyboardController?.hide()
                         }
                     },
                     source = exchange.value

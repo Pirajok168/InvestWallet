@@ -92,7 +92,10 @@ fun Home(
     })
 
     val format = SimpleDateFormat("H:MM, EEE, MMM d")
-    val listFavoriteTicket = homeViewModel.stateHome.collectAsState()
+    val listFavoriteTicket = homeViewModel.test.collectAsState()
+    Log.e("listFavoriteTicket", listFavoriteTicket.value.listFavoriteTicket.toString())
+
+
 
     Scaffold(
         backgroundColor = MaterialTheme.colors.background,
@@ -123,6 +126,7 @@ fun Home(
 
             FavoriteList(
                 listFavoriteTicket.value.listFavoriteTicket,
+                listFavoriteTicket.value.stateLoad,
                 onSeeAll = { TODO() },
                 onOpenTicket = onDetail
             )
@@ -252,6 +256,7 @@ fun Portfolio(
 @Composable
 fun FavoriteList(
     favoriteList: List<FavoriteTicket>,
+    state: com.example.investwallet.ui.home.StateLoad,
     onSeeAll: () -> Unit,
     onOpenTicket: (ticket: FavoriteTicket) -> Unit
 ) {
@@ -299,6 +304,7 @@ fun FavoriteList(
                 Log.e("price", it.price)
                 CardTicket(
                     it,
+                    state,
                     onOpenTicket=onOpenTicket
                 )
             }
@@ -311,6 +317,7 @@ fun FavoriteList(
 @Composable
 fun CardTicket(
     ticket: FavoriteTicket,
+    state: com.example.investwallet.ui.home.StateLoad,
     onOpenTicket: (ticket: FavoriteTicket) -> Unit
 ) {
     Card(
@@ -361,11 +368,21 @@ fun CardTicket(
             .fillMaxSize()
             .padding(20.dp), contentAlignment = Alignment.BottomStart){
             Column {
-                Text(
-                    text = ticket.price,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 25.sp
-                )
+                when(state){
+                    StateLoad.LOADING ->{
+                        Surface(
+                            color = Color(0xFFF3F3F3),
+                            modifier = Modifier.size(width = 90.dp, height = 30.dp).shimmer()
+                        ){}
+                    }
+                    StateLoad.SUCCESS ->{
+                        Text(
+                            text = ticket.price,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 25.sp
+                        )
+                    }
+                }
             }
         }
 
