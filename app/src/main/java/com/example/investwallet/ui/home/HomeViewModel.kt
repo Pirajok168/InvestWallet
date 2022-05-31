@@ -1,8 +1,6 @@
 package com.example.investwallet.ui.home
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.investwallet.database.ActiveUser
@@ -14,12 +12,16 @@ import com.example.investwallet.repository.StateCollectData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import okhttp3.internal.notify
 import javax.inject.Inject
 
+enum class StateLoad{
+    LOADING,
+    SUCCESS
+}
 
 data class HomeState(
-    val listFavoriteTicket: List<FavoriteTicket> = emptyList()
+    val listFavoriteTicket: List<FavoriteTicket> = emptyList(),
+    val stateLoad: StateLoad
 )
 
 //TODO(Переделать)
@@ -29,39 +31,46 @@ class HomeViewModel @Inject constructor(
     private val repository: ApiRepository
 ): ViewModel() {
     private val _listFavoriteTicket = databaseRepository.listFavoriteTicket
-    private val _stateHome: MutableStateFlow<HomeState> = MutableStateFlow(HomeState())
+    private val _stateHome: MutableStateFlow<HomeState> = MutableStateFlow(HomeState(stateLoad= StateLoad.LOADING))
     val stateHome: StateFlow<HomeState>
         get() = _stateHome
 
 
-    init {
 
-        viewModelScope.launch(Dispatchers.IO) {
-            _listFavoriteTicket.transform{
-                   _istFavoriteTicket ->
-                val list: MutableList<FavoriteTicket> = mutableListOf()
-                _istFavoriteTicket.forEach {
-                        _favorite ->
-                    if (_favorite.price.isEmpty()){
-                        val price = loadPrice(_favorite)
-                        _favorite.price = price
-                        list.add(_favorite)
-                    }else{
-                        list.add(_favorite)
-                    }
-                }
-                emit(list)
-            }.collect {
-                _stateHome.value = HomeState(it)
+
+    val test: StateFlow<HomeState> = _listFavoriteTicket.transform {
+            _istFavoriteTicket ->
+        emit(HomeState(_istFavoriteTicket, StateLoad.LOADING))
+        val _listData = mutableListOf<FavoriteTicket>()
+        _istFavoriteTicket.forEach {
+                _favorite ->
+            if (_favorite.price.isEmpty()){
+                val price = loadPrice(_favorite)
+                _favorite.price = price
+                _listData.add(_favorite)
+            }else{
+                _listData.add(_favorite)
             }
-
         }
-    }
+        Log.e("_listData", _listData.toString())
+        emit(HomeState(_listData, StateLoad.SUCCESS))
+
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Lazily,
+        initialValue = HomeState(stateLoad = StateLoad.SUCCESS)
+    )
 
 
-    suspend fun loadPrice(_favoriteTicket: FavoriteTicket): String = runBlocking(Dispatchers.IO)  {
+
+
+
+
+
+
+    suspend fun loadPrice(_favoriteTicket: FavoriteTicket): String  {
         Log.e("_favoriteTicket", _favoriteTicket.toString())
-        val favoriteTicket = async {
+        val favoriteTicket =
             when (_favoriteTicket.country){
                 "RU"->{
                     repository.collectDataForShareRussia(_favoriteTicket.getTag())
@@ -76,8 +85,8 @@ class HomeViewModel @Inject constructor(
                     repository.collectDataForCrypto(_favoriteTicket.getTag())
                 }
             }
-        }
-        val formatPrice = when(val state = favoriteTicket.await()){
+
+        val formatPrice = when(val state = favoriteTicket){
             is StateCollectData.Error -> {
                 " "
             }
@@ -94,9 +103,7 @@ class HomeViewModel @Inject constructor(
                 "${state.symbol} ${state.answerDTO.data.first().d.first()}"
             }
         }
-        withContext(Dispatchers.Main){
-            formatPrice
-        }
+        return  formatPrice
     }
 
 

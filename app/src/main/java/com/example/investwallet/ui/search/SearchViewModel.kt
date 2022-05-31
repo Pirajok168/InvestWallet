@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.internal.connection.Exchange
 import java.text.FieldPosition
 import java.util.prefs.AbstractPreferences
 import javax.inject.Inject
@@ -48,14 +49,16 @@ class SearchViewModel @Inject constructor(
     val searchViewState: StateFlow<SearchViewState>
         get() = _searchViewState
 
+    init {
+        Log.e("SearchViewModel", "тык")
+    }
 
 
 
-
-    fun updateList(toolsTicket: ToolsTicket){
+    fun updateList(toolsTicket: ToolsTicket, exchange: String = ""){
         _searchViewState.value = SearchViewState()
         viewModelScope.launch (Dispatchers.IO){
-            val list = async { repository.getListTicket("", type = toolsTicket.type) }
+            val list = async { repository.getListTicket("", type = toolsTicket.type, exchange = exchange) }
             withContext(Dispatchers.Main){
                 _searchViewState.value = SearchViewState(list.await(), StateSearch.EndSearch)
             }

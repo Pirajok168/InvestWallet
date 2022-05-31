@@ -7,7 +7,7 @@ import retrofit2.http.Query
 
 
 interface JSONSearchApi {
-    @GET("/symbol_search/?exchange=&hl=1&domain=production")
+    @GET("/symbol_search/?hl=1&domain=production")
     suspend fun getFindQuotes(@Query("text") text: String
                               , @Query("lang") lang: String
                               , @Query("type") type: String

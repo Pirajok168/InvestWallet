@@ -1,7 +1,9 @@
 package com.example.investwallet.ui.search
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -44,10 +46,13 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.example.investwallet.R
 import com.example.investwallet.dto.QuoteDTO
+import com.google.accompanist.flowlayout.FlowRow
+import kotlinx.coroutines.launch
 import me.vponomarenko.compose.shimmer.shimmer
+import javax.xml.transform.Source
 
 
-
+@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SearchScreen(
     searchViewModel: SearchViewModel = hiltViewModel(),
@@ -61,61 +66,190 @@ fun SearchScreen(
     val searchViewState = searchViewModel.searchViewState.collectAsState()
     val selectedList = listOf(ToolsTicket.All, ToolsTicket.Stocks, ToolsTicket.Crypto, )
     val (selectedOption, onOptionSelected ) = remember { mutableStateOf(selectedList[1]) }
+    val drawerState = rememberBottomDrawerState(BottomDrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    val exchange: MutableState<Sources> =  remember { mutableStateOf(Sources.AllSources) }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
-    Scaffold(
-        topBar = { SearchTopBar(
-            onBack =onBack,
-            searchViewModel.searchValue.value,
-            onEditText = { searchViewModel.onSearch(it,selectedOption) }
-        ) }
-    ) {
-            contentPadding ->
-
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            contentPadding = PaddingValues(20.dp),
-            modifier = Modifier.padding(contentPadding)
-        ){
-
-            item {
-                LineButton(
-                    selectedList,
-                    selectedOption = selectedOption,
-                    onOptionSelected = onOptionSelected,
-                    onClick = {
-                        searchViewModel.updateList(it)
+    BottomDrawer(
+        gesturesEnabled = false,
+        drawerContent = {
+            SettingSources(
+                onClick = {
+                    exchange.value = it
+                    onOptionSelected(ToolsTicket.All)
+                    searchViewModel.updateList(ToolsTicket.All, exchange = exchange.value.exchange)
+                    scope.launch {
+                        drawerState.close()
                     }
-                )
-            }
-            when(searchViewState.value.isLoading){
-                StateSearch.EndSearch -> {
+                }
+            )
+        },
+        content = {
+            Scaffold(
+                topBar = { SearchTopBar(
+                    onBack =onBack,
+                    searchViewModel.searchValue.value,
+                    onEditText = { searchViewModel.onSearch(it,selectedOption) },
+                    onSettings = {
+                        scope.launch {
+                            drawerState.open()
+                            keyboardController?.hide()
+                        }
+                    },
+                    source = exchange.value
+                ) }
+            ) {
+                    contentPadding ->
 
-                    items(searchViewState.value.listSearchingTicket){
-                        SearchCardTicket(
-                            it,
-                            onOpen={
-                                    symbol->
-                                onOpen(symbol.getTag(),selectedOption.type, symbol.country?:"")
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    contentPadding = PaddingValues(20.dp),
+                    modifier = Modifier.padding(contentPadding)
+                ){
+
+                    item {
+                        LineButton(
+                            selectedList,
+                            selectedOption = selectedOption,
+                            onOptionSelected = onOptionSelected,
+                            onClick = {
+                                searchViewModel.updateList(it, exchange = exchange.value.exchange)
                             }
                         )
                     }
-                }
-                StateSearch.LoadingSearch -> {
-                    items(20){
-                        _PlaceholderSearchCardTicket()
+                    when(searchViewState.value.isLoading){
+                        StateSearch.EndSearch -> {
+
+                            items(searchViewState.value.listSearchingTicket){
+                                SearchCardTicket(
+                                    it,
+                                    onOpen={
+                                            symbol->
+                                        onOpen(symbol.getTag(),selectedOption.type, symbol.country?:"")
+                                    }
+                                )
+                            }
+                        }
+                        StateSearch.LoadingSearch -> {
+                            items(20){
+                                _PlaceholderSearchCardTicket()
+                            }
+                        }
+                        StateSearch.NullSearch -> {
+
+                        }
                     }
                 }
-                StateSearch.NullSearch -> {
-
-                }
             }
+        },
+        drawerState = drawerState,
+        modifier = Modifier.systemBarsPadding()
+    )
+}
+
+sealed class Sources(
+    val subtitle: String,
+    val label: String,
+    val exchange: String,
+    val logo: String = "US"
+){
+    object AllSources: Sources("", "Все источники", "", "")
+    object NASDAQ: Sources("NASDAQ — Фондовая биржа NASDAQ","NASDAQ","NASDAQ")
+    object NYSE: Sources("NYSE — Нью-Йоркская фондовая биржа","NYSE","NYSE")
+    object ARCA: Sources("ARCA — NYSE ARCA & MKT","Arca", "AMEX")
+    object MOEX: Sources("MOEX — Московская биржа","MOEX","MOEX", "RU")
+/*
+    object ARCA: Sources("AMEX")
+    object OTC: Sources("OTC")
+    object DJ: Sources("DJ")
+    object SP: Sources("SP")
+    object CBOE: Sources("CBOE")
+    object CBOT: Sources("CBOT")
+    object CME: Sources("CME")*/
 
 
+}
+
+@Composable
+fun SettingSources(
+    onClick: (exchange: Sources ) -> Unit
+) {
+    val listSources = listOf(
+        Sources.AllSources,
+        Sources.NASDAQ,
+        Sources.MOEX,
+        Sources.NYSE,
+        Sources.ARCA,
+    )
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        contentPadding = PaddingValues(20.dp)
+    ){
+        items(listSources){
+            CardSources(it, onClick)
         }
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun CardSources(
+    source: Sources,
+    onClick: (exchange: Sources ) -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = { onClick(source) }
+    ) {
+        Row(
+            modifier = Modifier.padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
 
+            if (source.logo.isNotEmpty()){
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data("https://s3-symbol-logo.tradingview.com/country/${source.logo}.svg")
+                        .decoderFactory(SvgDecoder.Factory())
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop,
+                    placeholder= painterResource(id = R.drawable.ic_baseline_all_inclusive_24)
+                )
+            }else{
+                Surface(
+                    modifier = Modifier.size(30.dp),
+                    shape = CircleShape
+                ) {
+                    Image(painter = painterResource(id = R.drawable.ic_baseline_all_inclusive_24), contentDescription = "")
+                }
+            }
+
+
+            Spacer(modifier = Modifier.size(10.dp))
+
+            Column() {
+                Text(
+                    text = source.label,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+                AnimatedVisibility(visible = source.subtitle.isNotEmpty()) {
+                    Text(
+                        text = source.subtitle,
+                        fontWeight = FontWeight.ExtraLight,
+                        fontSize = 12.sp
+                    )
+                }
+            }
+        }
+    }
+}
 
 
 @Composable
@@ -168,6 +302,8 @@ fun SearchTopBar(
     onBack: () -> Unit,
     searchValue: String,
     onEditText: (newValue: String) -> Unit,
+    onSettings:() -> Unit,
+    source: Sources,
 ) {
     val focusManager = LocalFocusManager.current
     val requester = FocusRequester()
@@ -241,9 +377,30 @@ fun SearchTopBar(
                 )
             }
 
-            IconButton(onClick = {  }) {
-                Icon(imageVector = Icons.Default.Settings, contentDescription = "")
+            IconButton(onClick = { onSettings() }) {
+
+                if (source.logo.isNotEmpty()){
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data("https://s3-symbol-logo.tradingview.com/country/${source.logo}.svg")
+                            .decoderFactory(SvgDecoder.Factory())
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop,
+                        placeholder= painterResource(id = R.drawable.ic_baseline_all_inclusive_24)
+                    )
+                }else{
+                    Icon(imageVector = Icons.Default.Settings, contentDescription = "")
+                }
+
+
             }
+
+
         },
         modifier = Modifier.statusBarsPadding()
     )
