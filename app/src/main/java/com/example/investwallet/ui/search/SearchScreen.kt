@@ -68,7 +68,7 @@ fun SearchScreen(
     val (selectedOption, onOptionSelected ) = remember { mutableStateOf(selectedList[1]) }
     val drawerState = rememberBottomDrawerState(BottomDrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val exchange: MutableState<Sources> =  remember { mutableStateOf(Sources.AllSources) }
+    val exchange = searchViewModel.exchange
     val keyboardController = LocalSoftwareKeyboardController.current
 
     BottomDrawer(
@@ -78,7 +78,7 @@ fun SearchScreen(
                 onClick = {
                     exchange.value = it
                     onOptionSelected(ToolsTicket.All)
-                    searchViewModel.updateList(ToolsTicket.All, exchange = exchange.value.exchange)
+                    searchViewModel.updateList(ToolsTicket.All)
                     scope.launch {
                         drawerState.close()
                     }
@@ -114,7 +114,7 @@ fun SearchScreen(
                             selectedOption = selectedOption,
                             onOptionSelected = onOptionSelected,
                             onClick = {
-                                searchViewModel.updateList(it, exchange = exchange.value.exchange)
+                                searchViewModel.updateList(it)
                             }
                         )
                     }

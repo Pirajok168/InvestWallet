@@ -3,6 +3,7 @@ package com.example.investwallet.ui.search
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.investwallet.dto.QuoteDTO
@@ -53,12 +54,13 @@ class SearchViewModel @Inject constructor(
         Log.e("SearchViewModel", "тык")
     }
 
+    val exchange: MutableState<Sources> =  mutableStateOf(Sources.AllSources)
 
 
-    fun updateList(toolsTicket: ToolsTicket, exchange: String = ""){
+    fun updateList(toolsTicket: ToolsTicket){
         _searchViewState.value = SearchViewState()
         viewModelScope.launch (Dispatchers.IO){
-            val list = async { repository.getListTicket("", type = toolsTicket.type, exchange = exchange) }
+            val list = async { repository.getListTicket("", type = toolsTicket.type, exchange = exchange.value.exchange) }
             withContext(Dispatchers.Main){
                 _searchViewState.value = SearchViewState(list.await(), StateSearch.EndSearch)
             }
