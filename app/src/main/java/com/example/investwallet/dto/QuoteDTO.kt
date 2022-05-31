@@ -23,7 +23,9 @@ data class QuoteDTO(
         }
     }
 
-
+    override fun getSymbols(): String {
+        TODO("Not yet implemented")
+    }
 
 
     private fun replace(str: String): String{

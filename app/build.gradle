@@ -92,4 +92,9 @@ dependencies {
 
     /*FlowLayouts*/
     implementation "com.google.accompanist:accompanist-flowlayout:$accompanist_version"
+
+    /*Room*/
+    implementation "androidx.room:room-ktx:$rootProject.roomVersion"
+    kapt "androidx.room:room-compiler:$rootProject.roomVersion"
+    androidTestImplementation "androidx.room:room-testing:$rootProject.roomVersion"
 }

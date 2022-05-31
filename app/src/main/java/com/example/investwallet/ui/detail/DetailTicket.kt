@@ -1,17 +1,15 @@
 package com.example.investwallet.ui.detail
 
 import android.util.Log
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,23 +29,21 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.example.investwallet.R
 import com.example.investwallet.dto.converter.newsDtoItem
-import com.example.investwallet.dto.headlines.Headline
-import com.example.investwallet.dto.headlines.RelatedSymbol
 import com.example.investwallet.ui.detail.placeholder.detailticket._PlaceHolderHeadlines
 import com.example.investwallet.ui.detail.placeholder.detailticket._PlaceholderInfo
 import com.example.investwallet.ui.theme.InvestWalletTheme
-import me.vponomarenko.compose.shimmer.shimmer
 
 @Composable
 fun DetailScreen(
     detailViewModel: DetailViewModel = hiltViewModel(),
     tagTicket: String,
     category: String,
+    country: String,
     onBack: () -> Unit,
     onClick: (headline: newsDtoItem) -> Unit
 ) {
     LaunchedEffect(key1 = 0, block = {
-        detailViewModel.loadListDetailNews(tagTicket, category)
+        detailViewModel.loadListDetailNews(tagTicket, category, country)
     })
 
 
@@ -55,7 +51,16 @@ fun DetailScreen(
 
 
     Scaffold(
-        topBar = { TopBarDetailScreen(state.value.symbol?.getDescriptions() ?: "Загрузка", onBack) },
+        topBar = {
+            TopBarDetailScreen(
+                state.value.symbol?.getDescriptions() ?: "Загрузка",
+                onBack,
+                onFavoriteTicket = {
+                    detailViewModel.onFavorite(it)
+                },
+                isFavorite = state.value.isFavorite
+            )
+         },
         modifier = Modifier.systemBarsPadding()
     ) {
             paddingValues ->
@@ -76,7 +81,7 @@ fun DetailScreen(
                 StateLoad.Success -> {
                     Info(
                         state.value.symbol?.getURLImg() ?: "",
-                        "140 $"
+                        state.value.price
                     )
 
                     Headlines(state.value.headlineList, onClick = {
@@ -93,14 +98,30 @@ fun DetailScreen(
 @Composable
 fun TopBarDetailScreen(
     label: String,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onFavoriteTicket: (checked: Boolean) -> Unit,
+    isFavorite: MutableState<Boolean>,
 ) {
+
+    Log.e("_databaseFavoriteTicket", isFavorite.value.toString())
     TopAppBar(
         title = { Text(text = label,  fontWeight = FontWeight.Bold) },
         navigationIcon = { IconButton(onClick = { onBack() }) {
             Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "")
         } },
-        backgroundColor = MaterialTheme.colors.background
+        backgroundColor = MaterialTheme.colors.background,
+        actions = {
+            IconToggleButton(
+                checked = isFavorite.value,
+                onCheckedChange = {
+                    isFavorite.value = it
+                    onFavoriteTicket(isFavorite.value)
+                }
+            ) {
+                val tint by animateColorAsState(if (isFavorite.value) Color(0xFFEC407A) else Color(0xFFB0BEC5))
+                Icon(Icons.Filled.Favorite, contentDescription = "Localized description", tint = tint)
+            }
+        }
     )
 }
 
@@ -112,6 +133,7 @@ fun Info(
     urlImg: String,
     price: String
 ) {
+    Log.e("it.getURLImg()", "Info -- $urlImg")
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -197,7 +219,7 @@ fun ItemNews(
 
                 for (i in 0 until sizeIcons){
                     val symbol = headline.relatedSymbols[i]
-
+                    Log.e("it.getURLImg()", "ItemNews -- ${symbol.getURLImg()}")
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
                             .data(symbol.getURLImg())

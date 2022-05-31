@@ -51,7 +51,7 @@ import me.vponomarenko.compose.shimmer.shimmer
 fun SearchScreen(
     searchViewModel: SearchViewModel = hiltViewModel(),
     onBack: () -> Unit,
-    onOpen: (tag: String, category: String) -> Unit
+    onOpen: (tag: String, category: String, country: String) -> Unit,
 ) {
     LaunchedEffect(key1 = 0, block = {
         searchViewModel.updateList(ToolsTicket.Stocks)
@@ -94,7 +94,7 @@ fun SearchScreen(
                             it,
                             onOpen={
                                     symbol->
-                                onOpen(symbol.getTag(),selectedOption.type)
+                                onOpen(symbol.getTag(),selectedOption.type, symbol.country?:"")
                             }
                         )
                     }

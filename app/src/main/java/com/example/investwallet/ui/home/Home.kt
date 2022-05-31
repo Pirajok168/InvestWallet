@@ -1,6 +1,7 @@
 package com.example.investwallet.ui.home
 
 
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -29,10 +30,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.example.investwallet.ui.theme.InvestWalletTheme
 import com.example.investwallet.R
+import com.example.investwallet.database.FavoriteTicket
+import me.vponomarenko.compose.shimmer.shimmer
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -78,10 +83,17 @@ object SampleData{
 
 @Composable
 fun Home(
+    homeViewModel: HomeViewModel = hiltViewModel(),
     onSearch: () -> Unit,
-    onDetail: (ticket: Ticket) -> Unit
+    onDetail: (ticket: FavoriteTicket) -> Unit
 ) {
+    LaunchedEffect(key1 = 0, block = {
+        homeViewModel.create()
+    })
+
     val format = SimpleDateFormat("H:MM, EEE, MMM d")
+    val listFavoriteTicket = homeViewModel.stateHome.collectAsState()
+
     Scaffold(
         backgroundColor = MaterialTheme.colors.background,
         topBar = {
@@ -105,6 +117,12 @@ fun Home(
             )
             Portfolio(
                 SampleData.list,
+                onSeeAll = { TODO() },
+                onOpenTicket = onDetail
+            )
+
+            FavoriteList(
+                listFavoriteTicket.value.listFavoriteTicket,
                 onSeeAll = { TODO() },
                 onOpenTicket = onDetail
             )
@@ -192,9 +210,9 @@ fun AccountMany(
 fun Portfolio(
     listPortfolio: List<Ticket>,
     onSeeAll: () -> Unit,
-    onOpenTicket: (ticket: Ticket) -> Unit
+    onOpenTicket: (ticket: FavoriteTicket) -> Unit
 ) {
-    Row(
+   /* Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(20.dp),
@@ -202,7 +220,7 @@ fun Portfolio(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Моё Портфолио",
+            text = "Моё портфель",
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp
         )
@@ -228,6 +246,63 @@ fun Portfolio(
                 onOpenTicket=onOpenTicket
             )
         }
+    }*/
+}
+
+@Composable
+fun FavoriteList(
+    favoriteList: List<FavoriteTicket>,
+    onSeeAll: () -> Unit,
+    onOpenTicket: (ticket: FavoriteTicket) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "Избранное",
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp
+        )
+
+        ClickableText(
+            text = AnnotatedString(
+                "Показать все",
+                spanStyles = listOf(
+                    AnnotatedString.Range(SpanStyle(color = Color.Blue),0,"Показать все".length)
+                )
+            ),
+            onClick = { onSeeAll() }
+        )
+    }
+
+    LazyRow(
+        contentPadding = PaddingValues(20.dp),
+        horizontalArrangement=Arrangement.spacedBy(20.dp)
+    ){
+        if(favoriteList.isEmpty()){
+            items(5){
+                Card(
+                    modifier = Modifier
+                        .width(300.dp)
+                        .height(200.dp)
+                        .shimmer(),
+                    shape = RoundedCornerShape(20.dp),
+                    backgroundColor = Color(0xFFF3F3F3)
+                ) {}
+            }
+        }else{
+            items(favoriteList){
+                Log.e("price", it.price)
+                CardTicket(
+                    it,
+                    onOpenTicket=onOpenTicket
+                )
+            }
+        }
     }
 }
 
@@ -235,8 +310,8 @@ fun Portfolio(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CardTicket(
-    ticket: Ticket,
-    onOpenTicket: (ticket: Ticket) -> Unit
+    ticket: FavoriteTicket,
+    onOpenTicket: (ticket: FavoriteTicket) -> Unit
 ) {
     Card(
         onClick = { onOpenTicket(ticket) },
@@ -245,6 +320,7 @@ fun CardTicket(
             .height(200.dp),
         shape = RoundedCornerShape(20.dp)
     ) {
+
         Box(modifier = Modifier
             .fillMaxSize()
             .padding(20.dp), contentAlignment = Alignment.TopStart){
@@ -256,7 +332,8 @@ fun CardTicket(
                 ) {
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data("https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1199px-Cat03.jpg")
+                            .data(ticket.getURLImg())
+                            .decoderFactory(SvgDecoder.Factory())
                             .crossfade(true)
                             .build(),
                         contentDescription = "",
@@ -269,7 +346,7 @@ fun CardTicket(
                 }
 
                 Text(
-                    text = ticket.labelTicket,
+                    text = ticket.getSymbols(),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
                     modifier = Modifier.padding(start = 20.dp)
@@ -278,23 +355,17 @@ fun CardTicket(
             }
         }
 
+
+
         Box(modifier = Modifier
             .fillMaxSize()
             .padding(20.dp), contentAlignment = Alignment.BottomStart){
             Column {
                 Text(
-                    text = ticket.priceTicketOnTheAccount.toString(),
+                    text = ticket.price,
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 25.sp
                 )
-                Spacer(modifier = Modifier.size(10.dp))
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    Text(
-                        text = ticket.amountOnTheAccount.toString(),
-                        fontSize = 18.sp,
-                        color = Color.LightGray
-                    )
-                }
             }
         }
 

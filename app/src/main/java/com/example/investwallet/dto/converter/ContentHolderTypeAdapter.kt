@@ -123,6 +123,10 @@ data class RelatedSymbol(
         }
     }
 
+    override fun getSymbols(): String {
+        TODO("Not yet implemented")
+    }
+
     override fun getTag(): String {
         return symbol
     }
