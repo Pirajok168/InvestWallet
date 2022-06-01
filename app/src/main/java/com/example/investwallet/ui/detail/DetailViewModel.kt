@@ -63,7 +63,7 @@ class DetailViewModel @Inject constructor(
                 if(isFavoriteTicket){
                     insertFavoriteTicket(
                         FavoriteTicket(
-                            id = Random.nextInt(),
+                            id = _symbol.hashCode(),
                             userOwnerId = 1,
                             symbol = _symbol.symbol,
                             logoid = _symbol.logoid,
@@ -77,7 +77,7 @@ class DetailViewModel @Inject constructor(
                     )
                 }else{
                     deleteFavoriteTicket(
-                        _databaseFavoriteTicket!!
+                        _symbol.hashCode()
                     )
                 }
             }

@@ -35,8 +35,8 @@ interface UserDao {
     suspend fun insertFavoriteTicket(ticket: FavoriteTicket)
 
 
-    @Delete
-    suspend fun deleteFavoriteTicket(ticket: FavoriteTicket)
+    @Query("DELETE FROM favoriteTicket WHERE id=(:id)")
+    suspend fun deleteFavoriteTicket(id: Int)
 
 
     @Query("SELECT * FROM favoriteTicket")
