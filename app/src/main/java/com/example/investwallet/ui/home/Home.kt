@@ -89,21 +89,16 @@ fun Home(
     onSearch: () -> Unit,
     onDetail: (ticket: FavoriteTicket) -> Unit,
 ) {
-    val systemUiController = rememberSystemUiController()
-    val darkTheme: Boolean = isSystemInDarkTheme()
+
 
     LaunchedEffect(key1 = 0, block = {
         homeViewModel.create()
-        systemUiController.setSystemBarsColor(
-            color = if (darkTheme) Color(0xFF121212) else Color.Transparent,
-            darkIcons = !darkTheme
-        )
     })
 
 
 
 
-    val format = SimpleDateFormat("H:MM, EEE, MMM d")
+    val format = SimpleDateFormat("HH:MM, EEE, MMM d")
     val listFavoriteTicket = homeViewModel.test.collectAsState()
     Log.e("listFavoriteTicket", listFavoriteTicket.value.listFavoriteTicket.toString())
 

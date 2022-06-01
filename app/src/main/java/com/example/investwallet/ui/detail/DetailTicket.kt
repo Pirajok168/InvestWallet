@@ -86,13 +86,49 @@ fun DetailScreen(
 
         LaunchedEffect(key1 = color.value) {
             systemUiController.setStatusBarColor(
-                color = color.value,
+                color = Color.Transparent,
                 darkIcons = color.value.luminance() > 0.3f
             )
         }
 
+        Surface(
+            modifier = Modifier.navigationBarsPadding(),
+        ) {
+            Column() {
+                TopBarDetailScreen(
+                    state.value.symbol?.getDescriptions() ?: "Загрузка",
+                    onBack,
+                    onFavoriteTicket = {
+                        detailViewModel.onFavorite(it)
+                    },
+                    isFavorite = state.value.isFavorite
+                )
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    when(val _state = state.value.stateLoad){
+                        is StateLoad.Error -> {
 
-        Scaffold(
+                        }
+                        StateLoad.Loading -> {
+                            _PlaceholderInfo()
+                            _PlaceHolderHeadlines()
+                        }
+                        StateLoad.Success -> {
+                            Info(
+                                state.value.symbol?.getURLImg() ?: "",
+                                state.value.price
+                            )
+
+                            Headlines(state.value.headlineList, onClick = {
+                                detailViewModel.check(it)
+                                onClick(it)
+                            })
+                        }
+                    }
+                }
+
+            }
+        }
+       /* Scaffold(
             topBar = {
                 TopBarDetailScreen(
                     state.value.symbol?.getDescriptions() ?: "Загрузка",
@@ -135,7 +171,7 @@ fun DetailScreen(
                 }
 
             }
-        }
+        }*/
 
     }
 
@@ -150,31 +186,35 @@ fun TopBarDetailScreen(
 ) {
 
     Log.e("_databaseFavoriteTicket", isFavorite.value.toString())
-    TopAppBar(
-        title = { Text(
-            text = label,
-            fontWeight = FontWeight.Bold,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        ) },
-        navigationIcon = { IconButton(onClick = { onBack() }) {
-            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "")
-        } },
-        backgroundColor = MaterialTheme.colors.primary,
-        actions = {
-            IconToggleButton(
-                checked = isFavorite.value,
-                onCheckedChange = {
-                    isFavorite.value = it
-                    onFavoriteTicket(isFavorite.value)
+    Surface(color = MaterialTheme.colors.primary) {
+        TopAppBar(
+            title = { Text(
+                text = label,
+                fontWeight = FontWeight.Bold,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            ) },
+            navigationIcon = { IconButton(onClick = { onBack() }) {
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "")
+            } },
+            backgroundColor = MaterialTheme.colors.primary,
+            actions = {
+                IconToggleButton(
+                    checked = isFavorite.value,
+                    onCheckedChange = {
+                        isFavorite.value = it
+                        onFavoriteTicket(isFavorite.value)
+                    }
+                ) {
+                    val tint by animateColorAsState(if (isFavorite.value) MaterialTheme.colors.onPrimary else Color(0xFFB0BEC5))
+                    Icon(Icons.Filled.Favorite, contentDescription = "Localized description", tint = tint)
                 }
-            ) {
-                val tint by animateColorAsState(if (isFavorite.value) MaterialTheme.colors.onPrimary else Color(0xFFB0BEC5))
-                Icon(Icons.Filled.Favorite, contentDescription = "Localized description", tint = tint)
-            }
-        },
-        modifier = Modifier.statusBarsPadding()
-    )
+            },
+            modifier = Modifier.statusBarsPadding(),
+            elevation = 0.dp
+        )
+    }
+
 }
 
 

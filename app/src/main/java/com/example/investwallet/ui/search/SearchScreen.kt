@@ -61,14 +61,10 @@ fun SearchScreen(
     onBack: () -> Unit,
     onOpen: (tag: String, category: String, country: String) -> Unit,
 ) {
-    val systemUiController = rememberSystemUiController()
-    val darkTheme: Boolean = isSystemInDarkTheme()
+
     LaunchedEffect(key1 = 0, block = {
         searchViewModel.updateList(ToolsTicket.Stocks)
-        systemUiController.setSystemBarsColor(
-            color = if (darkTheme) Color(0xFF121212) else Color.Transparent,
-            darkIcons = !darkTheme
-        )
+
     })
 
     val searchViewState = searchViewModel.searchViewState.collectAsState()

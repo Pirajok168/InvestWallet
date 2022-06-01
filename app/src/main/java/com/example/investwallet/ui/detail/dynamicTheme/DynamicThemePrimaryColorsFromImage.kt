@@ -122,10 +122,7 @@ fun DynamicThemePrimaryColorsFromImage(
 ) {
 
     val colors = MaterialTheme.colors.copy(
-        primary = animateColorAsState(
-            dominantColorState.color,
-            spring(stiffness = Spring.StiffnessLow)
-        ).value,
+        primary = dominantColorState.color,
         onPrimary = animateColorAsState(
             dominantColorState.onColor,
             spring(stiffness = Spring.StiffnessLow)
