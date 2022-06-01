@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -37,6 +38,7 @@ import coil.request.ImageRequest
 import com.example.investwallet.ui.theme.InvestWalletTheme
 import com.example.investwallet.R
 import com.example.investwallet.database.FavoriteTicket
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import me.vponomarenko.compose.shimmer.shimmer
 import java.text.SimpleDateFormat
 import java.util.*
@@ -85,11 +87,21 @@ object SampleData{
 fun Home(
     homeViewModel: HomeViewModel = hiltViewModel(),
     onSearch: () -> Unit,
-    onDetail: (ticket: FavoriteTicket) -> Unit
+    onDetail: (ticket: FavoriteTicket) -> Unit,
 ) {
+    val systemUiController = rememberSystemUiController()
+    val darkTheme: Boolean = isSystemInDarkTheme()
+
     LaunchedEffect(key1 = 0, block = {
         homeViewModel.create()
+        systemUiController.setSystemBarsColor(
+            color = if (darkTheme) Color(0xFF121212) else Color.Transparent,
+            darkIcons = !darkTheme
+        )
     })
+
+
+
 
     val format = SimpleDateFormat("H:MM, EEE, MMM d")
     val listFavoriteTicket = homeViewModel.test.collectAsState()

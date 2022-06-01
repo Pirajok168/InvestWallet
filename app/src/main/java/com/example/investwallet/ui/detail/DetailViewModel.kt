@@ -99,7 +99,7 @@ class DetailViewModel @Inject constructor(
             }else{
                 _country
             }
-            Log.e("_symbol","_symbol - $_tag")
+            Log.e("_symbol","_symbol - ${list.await().toString()}")
             Log.e("_symbol","country - $country")
 
             val quoteDTO = async {
@@ -114,12 +114,13 @@ class DetailViewModel @Inject constructor(
                         repository.collectDataForShareIndia(_tag)
                     }
                     else -> {
-                        repository.collectDataForShareAmerica(_tag)
+                        repository.collectDataForCrypto(_tag)
                     }
                 }
 
             }
             _symbol = _symbolSearch.await().first()
+
             val _databaseFavoriteTicketJob = async {
                 databaseRepository.getFavorite(_symbol.symbol)
             }

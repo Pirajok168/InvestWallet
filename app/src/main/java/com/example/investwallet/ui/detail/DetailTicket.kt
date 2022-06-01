@@ -2,6 +2,8 @@ package com.example.investwallet.ui.detail
 
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -14,12 +16,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,9 +33,13 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.example.investwallet.R
 import com.example.investwallet.dto.converter.newsDtoItem
+import com.example.investwallet.ui.detail.dynamicTheme.DynamicThemePrimaryColorsFromImage
+import com.example.investwallet.ui.detail.dynamicTheme.rememberDominantColorState
 import com.example.investwallet.ui.detail.placeholder.detailticket._PlaceHolderHeadlines
 import com.example.investwallet.ui.detail.placeholder.detailticket._PlaceholderInfo
 import com.example.investwallet.ui.theme.InvestWalletTheme
+import com.example.investwallet.ui.theme.contrastAgainst
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
 fun DetailScreen(
@@ -49,50 +57,91 @@ fun DetailScreen(
 
     val state = detailViewModel.stateDetail.collectAsState()
 
-
-    Scaffold(
-        topBar = {
-            TopBarDetailScreen(
-                state.value.symbol?.getDescriptions() ?: "Загрузка",
-                onBack,
-                onFavoriteTicket = {
-                    detailViewModel.onFavorite(it)
-                },
-                isFavorite = state.value.isFavorite
-            )
-         },
-        modifier = Modifier.systemBarsPadding()
-    ) {
-            paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState()),
-        ) {
-
-            when(val _state = state.value.stateLoad){
-                is StateLoad.Error -> {
-
-                }
-                StateLoad.Loading -> {
-                    _PlaceholderInfo()
-                    _PlaceHolderHeadlines()
-                }
-                StateLoad.Success -> {
-                    Info(
-                        state.value.symbol?.getURLImg() ?: "",
-                        state.value.price
-                    )
-
-                    Headlines(state.value.headlineList, onClick = {
-                        detailViewModel.check(it)
-                        onClick(it)
-                    })
-                }
-            }
-
-        }
+    val surfaceColor = MaterialTheme.colors.surface
+    val dominantColorState = rememberDominantColorState(
+        defaultColor = surfaceColor
+    ) { color ->
+        // We want a color which has sufficient contrast against the surface color
+        color.contrastAgainst(surfaceColor) >= 0.5f
     }
+    val systemUiController = rememberSystemUiController()
+    val darkTheme: Boolean = isSystemInDarkTheme()
+
+
+
+
+    DynamicThemePrimaryColorsFromImage(dominantColorState){
+        LaunchedEffect(key1 = state.value.stateLoad, block = {
+            Log.e("state", state.value.symbol?.getURLImg()?: "пусто")
+            if (state.value.symbol?.getURLImg()?.isNotEmpty() == true){
+                Log.e("state", state.value.symbol?.getURLImg()?: "работает")
+                dominantColorState.updateColorsFromImageUrl(state.value.symbol?.getURLImg() ?: "")
+            }else{
+                dominantColorState.reset()
+            }
+        })
+
+        val color = animateColorAsState(
+            targetValue = MaterialTheme.colors.onError,
+            spring(stiffness = Spring.StiffnessLow)
+        )
+
+
+        LaunchedEffect(key1 = color.value) {
+            systemUiController.setStatusBarColor(
+                color = color.value,
+                darkIcons = color.value.luminance() > 0.3f
+            )
+        }
+
+
+        Scaffold(
+            topBar = {
+                TopBarDetailScreen(
+                    state.value.symbol?.getDescriptions() ?: "Загрузка",
+                    onBack,
+                    onFavoriteTicket = {
+                        detailViewModel.onFavorite(it)
+                    },
+                    isFavorite = state.value.isFavorite
+                )
+            },
+            modifier = Modifier,
+        ) {
+                paddingValues ->
+            Column(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .verticalScroll(rememberScrollState())
+                    .background(color = surfaceColor),
+            ) {
+
+                when(val _state = state.value.stateLoad){
+                    is StateLoad.Error -> {
+
+                    }
+                    StateLoad.Loading -> {
+                        _PlaceholderInfo()
+                        _PlaceHolderHeadlines()
+                    }
+                    StateLoad.Success -> {
+                        Info(
+                            state.value.symbol?.getURLImg() ?: "",
+                            state.value.price
+                        )
+
+                        Headlines(state.value.headlineList, onClick = {
+                            detailViewModel.check(it)
+                            onClick(it)
+                        })
+                    }
+                }
+
+            }
+        }
+
+    }
+
 }
 
 @Composable
@@ -105,11 +154,16 @@ fun TopBarDetailScreen(
 
     Log.e("_databaseFavoriteTicket", isFavorite.value.toString())
     TopAppBar(
-        title = { Text(text = label,  fontWeight = FontWeight.Bold) },
+        title = { Text(
+            text = label,
+            fontWeight = FontWeight.Bold,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        ) },
         navigationIcon = { IconButton(onClick = { onBack() }) {
             Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "")
         } },
-        backgroundColor = MaterialTheme.colors.background,
+        backgroundColor = MaterialTheme.colors.primary,
         actions = {
             IconToggleButton(
                 checked = isFavorite.value,
@@ -118,10 +172,11 @@ fun TopBarDetailScreen(
                     onFavoriteTicket(isFavorite.value)
                 }
             ) {
-                val tint by animateColorAsState(if (isFavorite.value) Color(0xFFEC407A) else Color(0xFFB0BEC5))
+                val tint by animateColorAsState(if (isFavorite.value) MaterialTheme.colors.onPrimary else Color(0xFFB0BEC5))
                 Icon(Icons.Filled.Favorite, contentDescription = "Localized description", tint = tint)
             }
-        }
+        },
+        modifier = Modifier.statusBarsPadding()
     )
 }
 
@@ -159,7 +214,7 @@ fun Info(
         Text(
             text = price,
             fontWeight = FontWeight.Bold,
-            fontSize = 60.sp
+            fontSize = 60.sp,
         )
     }
 }
@@ -174,7 +229,7 @@ fun Headlines (
         fontWeight = FontWeight.Bold,
         fontSize = 26.sp,
         fontFamily = FontFamily.Monospace,
-        modifier = Modifier.padding(20.dp)
+        modifier = Modifier.padding(20.dp),
     )
 
 

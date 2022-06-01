@@ -6,6 +6,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -47,6 +48,7 @@ import coil.request.ImageRequest
 import com.example.investwallet.R
 import com.example.investwallet.dto.QuoteDTO
 import com.google.accompanist.flowlayout.FlowRow
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
 import me.vponomarenko.compose.shimmer.shimmer
 import javax.xml.transform.Source
@@ -59,8 +61,14 @@ fun SearchScreen(
     onBack: () -> Unit,
     onOpen: (tag: String, category: String, country: String) -> Unit,
 ) {
+    val systemUiController = rememberSystemUiController()
+    val darkTheme: Boolean = isSystemInDarkTheme()
     LaunchedEffect(key1 = 0, block = {
         searchViewModel.updateList(ToolsTicket.Stocks)
+        systemUiController.setSystemBarsColor(
+            color = if (darkTheme) Color(0xFF121212) else Color.Transparent,
+            darkIcons = !darkTheme
+        )
     })
 
     val searchViewState = searchViewModel.searchViewState.collectAsState()
