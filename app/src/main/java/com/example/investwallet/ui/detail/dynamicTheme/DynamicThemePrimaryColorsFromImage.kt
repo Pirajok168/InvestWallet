@@ -60,34 +60,25 @@ class DominantColorState(
         val cached = cache?.get(url)
         Log.e("url", url)
         if (cached != null) {
-            // If we already have the result cached, return early now...
             return cached
         }
 
-        // Otherwise we calculate the swatches in the image, and return the first valid color
         return calculateSwatchesInImage(context, url)
-            // First we want to sort the list by the color's population
             .sortedByDescending { swatch -> swatch.population }
-            // Then we want to find the first valid color
             .firstOrNull {
                     swatch ->
                 Log.e("swatch", "${swatch.rgb.toString()} -- ${ isColorValid(Color(swatch.rgb))}")
                 isColorValid(Color(swatch.rgb))
             }
-            // If we found a valid swatch, wrap it in a [DominantColors]
             ?.let { swatch ->
                 DominantColors(
                     color = Color(swatch.rgb),
                     onColor = Color(swatch.bodyTextColor).copy(alpha = 1f)
                 )
             }
-            // Cache the resulting [DominantColors]
             ?.also { result -> cache?.put(url, result) }
     }
 
-    /**
-     * Reset the color values to [defaultColor].
-     */
     fun reset() {
         color = defaultColor
         onColor = defaultColor
@@ -100,12 +91,9 @@ private suspend fun calculateSwatchesInImage(
 ): List<Palette.Swatch> {
     val request = ImageRequest.Builder(context)
         .data(imageUrl)
-        // We scale the image to cover 128px x 128px (i.e. min dimension == 128px)
         .size(128).scale(Scale.FILL)
         .decoderFactory(SvgDecoder.Factory())
-        // Disable hardware bitmaps, since Palette uses Bitmap.getPixels()
         .allowHardware(false)
-        // Set a custom memory cache key to avoid overwriting the displayed image in the cache
         .memoryCacheKey("$imageUrl.palette")
         .build()
 
@@ -117,13 +105,8 @@ private suspend fun calculateSwatchesInImage(
     return bitmap?.let {
         withContext(Dispatchers.Default) {
             val palette = Palette.Builder(bitmap)
-                // Disable any bitmap resizing in Palette. We've already loaded an appropriately
-                // sized bitmap through Coil
                 .resizeBitmapArea(0)
-                // Clear any built-in filters. We want the unfiltered dominant color
                 .clearFilters()
-
-                // We reduce the maximum color count down to 8
                 .maximumColorCount(8)
                 .generate()
 

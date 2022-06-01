@@ -61,20 +61,17 @@ fun DetailScreen(
     val dominantColorState = rememberDominantColorState(
         defaultColor = surfaceColor
     ) { color ->
-        // We want a color which has sufficient contrast against the surface color
         color.contrastAgainst(surfaceColor) >= 0.5f
     }
+
     val systemUiController = rememberSystemUiController()
-    val darkTheme: Boolean = isSystemInDarkTheme()
 
 
 
 
     DynamicThemePrimaryColorsFromImage(dominantColorState){
         LaunchedEffect(key1 = state.value.stateLoad, block = {
-            Log.e("state", state.value.symbol?.getURLImg()?: "пусто")
             if (state.value.symbol?.getURLImg()?.isNotEmpty() == true){
-                Log.e("state", state.value.symbol?.getURLImg()?: "работает")
                 dominantColorState.updateColorsFromImageUrl(state.value.symbol?.getURLImg() ?: "")
             }else{
                 dominantColorState.reset()
