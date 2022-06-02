@@ -96,6 +96,9 @@ class HomeViewModel @Inject constructor(
             is StateCollectData.IndiaStock -> {
                 "${state.symbol} ${state.answerDTO.data.first().d.first()}"
             }
+            is StateCollectData.UkStock -> {
+                "${state.symbol} ${state.answerDTO.data.first().d.first()}"
+            }
         }
         return  formatPrice
     }

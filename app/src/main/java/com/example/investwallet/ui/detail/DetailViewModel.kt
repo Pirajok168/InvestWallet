@@ -113,6 +113,9 @@ class DetailViewModel @Inject constructor(
                     "IN" ->{
                         repository.collectDataForShareIndia(_tag)
                     }
+                    "GB" ->{
+                        repository.collectDataForShareUk(_tag)
+                    }
                     else -> {
                         repository.collectDataForCrypto(_tag)
                     }
@@ -140,6 +143,9 @@ class DetailViewModel @Inject constructor(
                     "${state.symbol} ${state.answerDTO.data.first().d.first()}"
                 }
                 is StateCollectData.IndiaStock -> {
+                    "${state.symbol} ${state.answerDTO.data.first().d.first()}"
+                }
+                is StateCollectData.UkStock -> {
                     "${state.symbol} ${state.answerDTO.data.first().d.first()}"
                 }
             }

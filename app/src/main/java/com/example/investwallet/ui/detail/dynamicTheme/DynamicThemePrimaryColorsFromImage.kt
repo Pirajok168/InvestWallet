@@ -67,7 +67,6 @@ class DominantColorState(
             .sortedByDescending { swatch -> swatch.population }
             .firstOrNull {
                     swatch ->
-                Log.e("swatch", "${swatch.rgb.toString()} -- ${ isColorValid(Color(swatch.rgb))}")
                 isColorValid(Color(swatch.rgb))
             }
             ?.let { swatch ->
@@ -120,7 +119,6 @@ fun DynamicThemePrimaryColorsFromImage(
     dominantColorState: DominantColorState = rememberDominantColorState(),
     content: @Composable () -> Unit
 ) {
-
     val colors = MaterialTheme.colors.copy(
         primary = dominantColorState.color,
         onPrimary = animateColorAsState(
