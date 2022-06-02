@@ -73,7 +73,7 @@ class SearchViewModel @Inject constructor(
                 searchValue.value = newValue
             }
 
-            val list  = repository.getListTicket(newValue, type = selectedOption.type)
+            val list  = repository.getListTicket(newValue, type = selectedOption.type, exchange = exchange.value.exchange)
 
             withContext(Dispatchers.Main){
                 val state = if (list.isEmpty()){

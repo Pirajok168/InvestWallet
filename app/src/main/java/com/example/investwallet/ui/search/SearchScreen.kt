@@ -94,7 +94,7 @@ fun SearchScreen(
                 topBar = { SearchTopBar(
                     onBack =onBack,
                     searchViewModel.searchValue.value,
-                    onEditText = { searchViewModel.onSearch(it,selectedOption) },
+                    onEditText = { searchViewModel.onSearch(it, selectedOption) },
                     onSettings = {
                         scope.launch {
                             drawerState.open()

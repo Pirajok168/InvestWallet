@@ -88,7 +88,7 @@ class HomeViewModel @Inject constructor(
                 "${state.symbol} ${state.answerDTO.data.first().d.first()}"
             }
             is StateCollectData.RussiaStock ->{
-                "${state.answerDTO.data?.first()?.d.first()} ${state.symbol}"
+                "${state.answerDTO.data.first().d.first()} ${state.symbol}"
             }
             is StateCollectData.CryptoStock -> {
                 "${state.symbol} ${state.answerDTO.data.first().d.first()}"
