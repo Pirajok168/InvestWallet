@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @Entity(tableName = "favoriteTicket")
 data class FavoriteTicket(
-    @PrimaryKey val id: Int,
+    @PrimaryKey val id: String,
     val userOwnerId: Int,
     val logoid: String? ="",
     val base_currency_logoid: String? = null,
@@ -29,11 +29,6 @@ data class FavoriteTicket(
     var type: String
 ): IUTag{
     @Ignore var price: String = ""
-
-
-
-
-
 
     override fun getURLImg(): String{
         return if (base_currency_logoid == null) {
@@ -65,7 +60,6 @@ data class FavoriteTicket(
     override fun getDescriptions(): String {
         return replace(description)
     }
-
 
 
 }

@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -28,6 +27,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -38,49 +38,12 @@ import coil.request.ImageRequest
 import com.example.investwallet.ui.theme.InvestWalletTheme
 import com.example.investwallet.R
 import com.example.investwallet.database.FavoriteTicket
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import me.vponomarenko.compose.shimmer.shimmer
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-data class Ticket(
-    val labelTicket: String,
-    val priceTicket: Int,
-    val iconTicket: Int,
-    val amountOnTheAccount: Int
-){
-    val priceTicketOnTheAccount = priceTicket * amountOnTheAccount
-}
 
-object SampleData{
-    val list: List<Ticket> = listOf(
-        Ticket(
-            labelTicket = "APPLE",
-            priceTicket = 134,
-            iconTicket = R.drawable.ic_launcher_foreground,
-            amountOnTheAccount = 3
-        ),
-        Ticket(
-            labelTicket = "APPLE",
-            priceTicket = 134,
-            iconTicket = R.drawable.ic_launcher_foreground,
-            amountOnTheAccount = 3
-        ),
-        Ticket(
-            labelTicket = "APPLE",
-            priceTicket = 134,
-            iconTicket = R.drawable.ic_launcher_foreground,
-            amountOnTheAccount = 3
-        ),
-        Ticket(
-            labelTicket = "APPLE",
-            priceTicket = 134,
-            iconTicket = R.drawable.ic_launcher_foreground,
-            amountOnTheAccount = 3
-        ),
-    )
-}
 
 
 @Composable
@@ -122,15 +85,7 @@ fun Home(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            AccountMany(
-                "10000000000 ₽",
-                format.format(Date())
-            )
-            Portfolio(
-                SampleData.list,
-                onSeeAll = { TODO() },
-                onOpenTicket = onDetail
-            )
+
 
             FavoriteList(
                 listFavoriteTicket.value.listFavoriteTicket,
@@ -139,7 +94,7 @@ fun Home(
                 onOpenTicket = onDetail
             )
 
-            Information(SampleData.list,)
+
         }
     }
 }
@@ -218,48 +173,7 @@ fun AccountMany(
     }
 }
 
-@Composable
-fun Portfolio(
-    listPortfolio: List<Ticket>,
-    onSeeAll: () -> Unit,
-    onOpenTicket: (ticket: FavoriteTicket) -> Unit
-) {
-   /* Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(20.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "Моё портфель",
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp
-        )
 
-        ClickableText(
-            text = AnnotatedString(
-                "Показать все",
-                spanStyles = listOf(
-                    AnnotatedString.Range(SpanStyle(color = Color.Blue),0,"Показать все".length)
-                )
-            ),
-            onClick = { onSeeAll() }
-        )
-    }
-
-    LazyRow(
-        contentPadding = PaddingValues(20.dp),
-        horizontalArrangement=Arrangement.spacedBy(20.dp)
-    ){
-        items(listPortfolio){
-            CardTicket(
-                it,
-                onOpenTicket=onOpenTicket
-            )
-        }
-    }*/
-}
 
 @Composable
 fun FavoriteList(
@@ -276,7 +190,7 @@ fun FavoriteList(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Избранное",
+            text = "Избранные акции",
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp
         )
@@ -398,10 +312,10 @@ fun CardTicket(
 }
 
 
-@OptIn(ExperimentalMaterialApi::class)
+
 @Composable
 fun Information(
-    list: List<Ticket>,
+    list: List<FavoriteTicket>,
 ) {
     Text(
         text = "Изменения портфеля",
@@ -458,7 +372,7 @@ fun Information(
 
 @Composable
 fun LittleCardTicket(
-    ticket: Ticket
+    ticket: FavoriteTicket
 ) {
     Card(
         modifier = Modifier
@@ -474,14 +388,17 @@ fun LittleCardTicket(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Surface() {
+            Surface(
+                modifier = Modifier.weight(4f)
+            ) {
                 Row() {
                     Surface(
                         modifier = Modifier.border(1.dp, Color.Black, CircleShape)
                     ) {
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
-                                .data("https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1199px-Cat03.jpg")
+                                .data(ticket.getURLImg())
+                                .decoderFactory(SvgDecoder.Factory())
                                 .crossfade(true)
                                 .build(),
                             contentDescription = "",
@@ -494,16 +411,27 @@ fun LittleCardTicket(
                     }
                     Spacer(modifier = Modifier.size(20.dp))
                     Column() {
-                        Text(text = ticket.labelTicket, fontWeight = FontWeight.Bold)
+                        Text(
+                            text = ticket.getDescriptions(),
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.padding(end = 5.dp)
+                        )
                         Spacer(modifier = Modifier.size(3.dp))
                         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                            Text(text = ticket.labelTicket, color = Color.LightGray)
+                            Text(
+                                text = ticket.getSymbols(),
+                                color = Color.LightGray,
+                            )
                         }
                     }
                 }
             }
 
-            Surface() {
+            Surface(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(text = "+0.67%", color = Color.Green)
             }
 
@@ -512,18 +440,4 @@ fun LittleCardTicket(
     }
 }
 
-@Preview
-@Composable
-fun PreviewHome() {
-    InvestWalletTheme{
-        Home(onSearch = { }, onDetail = { }, onSeeAll = {})
-    }
-}
 
-@Preview
-@Composable
-fun PreviewLittleCardTicket() {
-    InvestWalletTheme{
-        LittleCardTicket(SampleData.list.first())
-    }
-}

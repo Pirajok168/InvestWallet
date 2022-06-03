@@ -20,7 +20,7 @@ class DatabaseRepository @Inject constructor(
         dao.insertFavoriteTicket(ticket)
     }
 
-    suspend fun deleteFavoriteTicket(id: Int){
+    suspend fun deleteFavoriteTicket(id: String){
         dao.deleteFavoriteTicket(id)
     }
 
