@@ -72,7 +72,8 @@ class DetailViewModel @Inject constructor(
                             exchange = _symbol.exchange,
                             type = _symbol.type,
                             typespecs = _symbol.typespecs?.firstOrNull(),
-                            prefix = _symbol.prefix
+                            prefix = _symbol.prefix,
+                            description = _symbol.description
                         )
                     )
                 }else{

@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.investwallet.ui.all.SeeAll
 import com.example.investwallet.ui.detail.DetailNews
 import com.example.investwallet.ui.detail.DetailScreen
 import com.example.investwallet.ui.home.Home
@@ -17,6 +18,7 @@ sealed class Screen(val route: String){
     object Search: Screen("search")
     object Detail: Screen("detail")
     object DetailNews: Screen("detail_news")
+    object SeeAll: Screen("see_all")
 }
 
 @Composable
@@ -35,6 +37,11 @@ fun InvestWalletApp(
                 },
                 onDetail = {
                     navController.navigate("${Screen.Detail.route}?tag=${it.getTag()}&category=${it.type}&country=${it.country}"){
+                        launchSingleTop = true
+                    }
+                },
+                onSeeAll = {
+                    navController.navigate(Screen.SeeAll.route){
                         launchSingleTop = true
                     }
                 }
@@ -91,6 +98,19 @@ fun InvestWalletApp(
                     navController.navigate("${Screen.Detail.route}?tag=$it&category=&country=")
                 }
             )
+        }
+
+        composable(
+            route = Screen.SeeAll.route
+        ){
+            SeeAll(onBack = {
+                navController.popBackStack()
+            },
+            onDetail = {
+                navController.navigate("${Screen.Detail.route}?tag=${it.getTag()}&category=${it.type}&country=${it.country}"){
+                    launchSingleTop = true
+                }
+            })
         }
     }
 

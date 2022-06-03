@@ -88,6 +88,7 @@ fun Home(
     homeViewModel: HomeViewModel = hiltViewModel(),
     onSearch: () -> Unit,
     onDetail: (ticket: FavoriteTicket) -> Unit,
+    onSeeAll: () -> Unit
 ) {
 
 
@@ -98,7 +99,7 @@ fun Home(
 
 
 
-    val format = SimpleDateFormat("HH:MM, EEE, MMM d")
+    val format = SimpleDateFormat("HH:mm, EEE, MMM d")
     val listFavoriteTicket = homeViewModel.test.collectAsState()
     Log.e("listFavoriteTicket", listFavoriteTicket.value.listFavoriteTicket.toString())
 
@@ -134,7 +135,7 @@ fun Home(
             FavoriteList(
                 listFavoriteTicket.value.listFavoriteTicket,
                 listFavoriteTicket.value.stateLoad,
-                onSeeAll = { TODO() },
+                onSeeAll = onSeeAll,
                 onOpenTicket = onDetail
             )
 
@@ -515,7 +516,7 @@ fun LittleCardTicket(
 @Composable
 fun PreviewHome() {
     InvestWalletTheme{
-        Home(onSearch = { }, onDetail = { })
+        Home(onSearch = { }, onDetail = { }, onSeeAll = {})
     }
 }
 
