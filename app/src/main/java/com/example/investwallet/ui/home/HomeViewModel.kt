@@ -20,7 +20,8 @@ enum class StateLoad{
 }
 
 data class HomeState(
-    val listFavoriteTicket: List<FavoriteTicket> = emptyList(),
+    val listFavoriteStock: List<FavoriteTicket> = emptyList(),
+    val listFavoriteCrypto: List<FavoriteTicket> = emptyList(),
     val stateLoad: StateLoad
 )
 
@@ -40,14 +41,25 @@ class HomeViewModel @Inject constructor(
 
     val test: StateFlow<HomeState> = _listFavoriteTicket.transform {
             _istFavoriteTicket ->
-        emit(HomeState(_istFavoriteTicket, StateLoad.LOADING))
-        val _listData = mutableListOf<FavoriteTicket>()
+        val group = _istFavoriteTicket.groupBy {
+                tic ->
+            tic.type
+        }
+
+
+
+        val listStock = group["stock"]
+        val listCrypto = group["crypto"]
+
+        emit(HomeState(listStock ?: emptyList(), listCrypto ?: emptyList(), StateLoad.LOADING))
+
+
         _istFavoriteTicket.forEach {
                 _favorite ->
             _favorite.price = loadPrice(_favorite)
-            _listData.add(_favorite)
         }
-        emit(HomeState(_listData, StateLoad.SUCCESS))
+
+        emit(HomeState(listStock ?: emptyList(), listCrypto ?: emptyList(), StateLoad.SUCCESS))
 
     }.stateIn(
         scope = viewModelScope,
@@ -62,7 +74,7 @@ class HomeViewModel @Inject constructor(
 
 
 
-    suspend fun loadPrice(_favoriteTicket: FavoriteTicket): String  {
+    private suspend fun loadPrice(_favoriteTicket: FavoriteTicket): String  {
         Log.e("_favoriteTicket", _favoriteTicket.toString())
         val favoriteTicket =
             when (_favoriteTicket.country){

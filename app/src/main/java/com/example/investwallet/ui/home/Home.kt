@@ -62,9 +62,10 @@ fun Home(
 
 
 
-    val format = SimpleDateFormat("HH:mm, EEE, MMM d")
+
+
     val listFavoriteTicket = homeViewModel.test.collectAsState()
-    Log.e("listFavoriteTicket", listFavoriteTicket.value.listFavoriteTicket.toString())
+
 
 
 
@@ -88,13 +89,20 @@ fun Home(
 
 
             FavoriteList(
-                listFavoriteTicket.value.listFavoriteTicket,
+                "Избранные акции",
+                listFavoriteTicket.value.listFavoriteStock,
                 listFavoriteTicket.value.stateLoad,
                 onSeeAll = onSeeAll,
                 onOpenTicket = onDetail
             )
 
-
+            FavoriteList(
+                "Криптовалюта",
+                listFavoriteTicket.value.listFavoriteCrypto,
+                listFavoriteTicket.value.stateLoad,
+                onSeeAll = onSeeAll,
+                onOpenTicket = onDetail
+            )
         }
     }
 }
@@ -177,6 +185,7 @@ fun AccountMany(
 
 @Composable
 fun FavoriteList(
+    label: String,
     favoriteList: List<FavoriteTicket>,
     state: com.example.investwallet.ui.home.StateLoad,
     onSeeAll: () -> Unit,
@@ -190,7 +199,7 @@ fun FavoriteList(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Избранные акции",
+            text = label,
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp
         )
