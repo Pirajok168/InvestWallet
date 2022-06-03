@@ -22,6 +22,7 @@ enum class StateLoad{
 data class HomeState(
     val listFavoriteStock: List<FavoriteTicket> = emptyList(),
     val listFavoriteCrypto: List<FavoriteTicket> = emptyList(),
+    val listFavoriteEtf: List<FavoriteTicket> = emptyList(),
     val stateLoad: StateLoad
 )
 
@@ -43,15 +44,20 @@ class HomeViewModel @Inject constructor(
             _istFavoriteTicket ->
         val group = _istFavoriteTicket.groupBy {
                 tic ->
-            tic.type
+
+            if (tic.typespecs == "common"){
+                tic.type
+            }else tic.typespecs ?: tic.type
+
         }
 
 
 
         val listStock = group["stock"]
         val listCrypto = group["crypto"]
+        val listEtf = group["etf"]
 
-        emit(HomeState(listStock ?: emptyList(), listCrypto ?: emptyList(), StateLoad.LOADING))
+        emit(HomeState(listStock ?: emptyList(), listCrypto ?: emptyList(),listEtf  ?: emptyList(), StateLoad.LOADING))
 
 
         _istFavoriteTicket.forEach {
@@ -59,7 +65,7 @@ class HomeViewModel @Inject constructor(
             _favorite.price = loadPrice(_favorite)
         }
 
-        emit(HomeState(listStock ?: emptyList(), listCrypto ?: emptyList(), StateLoad.SUCCESS))
+        emit(HomeState(listStock ?: emptyList(), listCrypto ?: emptyList(),listEtf  ?: emptyList(), StateLoad.SUCCESS))
 
     }.stateIn(
         scope = viewModelScope,

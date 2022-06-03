@@ -103,6 +103,14 @@ fun Home(
                 onSeeAll = onSeeAll,
                 onOpenTicket = onDetail
             )
+
+            FavoriteList(
+                "Etf",
+                listFavoriteTicket.value.listFavoriteEtf,
+                listFavoriteTicket.value.stateLoad,
+                onSeeAll = onSeeAll,
+                onOpenTicket = onDetail
+            )
         }
     }
 }
