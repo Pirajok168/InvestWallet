@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.investwallet.database.ActiveUser
 import com.example.investwallet.database.FavoriteTicket
 import com.example.investwallet.database.User
+import com.example.investwallet.dto.post.PostDTO
 import com.example.investwallet.repository.ApiRepository
 import com.example.investwallet.repository.DatabaseRepository
 import com.example.investwallet.repository.StateCollectData
@@ -27,6 +28,7 @@ data class HomeState(
 )
 
 //TODO(Переделать)
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val databaseRepository: DatabaseRepository,
@@ -36,7 +38,6 @@ class HomeViewModel @Inject constructor(
     private val _stateHome: MutableStateFlow<HomeState> = MutableStateFlow(HomeState(stateLoad= StateLoad.LOADING))
     val stateHome: StateFlow<HomeState>
         get() = _stateHome
-
 
 
 

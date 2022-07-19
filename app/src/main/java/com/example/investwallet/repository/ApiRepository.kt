@@ -45,7 +45,11 @@ class ApiRepository @Inject constructor(
     private val postJSONApi: PostJSONApi
 ) {
 
-
+    suspend fun postApi(
+        dto: PostDTO
+    ){
+        postJSONApi.collectDataForShareAmerica(dto)
+    }
 
     val symbol: MutableStateFlow<IUTag?> = MutableStateFlow(null)
     val detailNews: MutableStateFlow<newsDtoItem?> = MutableStateFlow(null)

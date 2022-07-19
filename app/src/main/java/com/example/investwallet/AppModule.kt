@@ -74,7 +74,7 @@ object AppModule {
     @Singleton
     @Provides
     @Named("postApi")
-    fun provideJSONPostApo(): PostJSONApi =Retrofit.Builder()
+    fun provideJSONPostApo(): PostJSONApi = Retrofit.Builder()
         .baseUrl("https://scanner.tradingview.com/")
         .client(OkHttpClient())
         .addConverterFactory(GsonConverterFactory.create())

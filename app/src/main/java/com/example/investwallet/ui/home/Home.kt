@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
@@ -61,7 +62,7 @@ fun Home(
 
 
 
-
+    val model: HomeViewModel = viewModel()
 
 
     val listFavoriteTicket = homeViewModel.test.collectAsState()
@@ -311,7 +312,9 @@ fun CardTicket(
                     StateLoad.LOADING ->{
                         Surface(
                             color = Color(0xFFF3F3F3),
-                            modifier = Modifier.size(width = 90.dp, height = 30.dp).shimmer()
+                            modifier = Modifier
+                                .size(width = 90.dp, height = 30.dp)
+                                .shimmer()
                         ){}
                     }
                     StateLoad.SUCCESS ->{
