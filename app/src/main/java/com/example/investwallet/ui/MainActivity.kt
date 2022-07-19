@@ -34,6 +34,7 @@ import coil.imageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.size.Scale
+import com.example.investwallet.shared.Greeting
 import com.example.investwallet.ui.search.SearchScreen
 import com.example.investwallet.ui.theme.InvestWalletTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -53,6 +54,7 @@ class MainActivity : ComponentActivity() {
 
             val systemUiController = rememberSystemUiController()
             val darkTheme: Boolean = isSystemInDarkTheme()
+            
 
             SideEffect {
                 systemUiController.setSystemBarsColor(
