@@ -61,7 +61,6 @@ kotlin {
             dependencies {
                 //Ktor
                 implementation("io.ktor:ktor-client-darwin:$ktorVersion")
-                implementation("io.ktor:ktor-client-ios:${ktorVersion}")
             }
         }
         val iosX64Test by getting

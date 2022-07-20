@@ -14,7 +14,6 @@ internal val apiModule = DI.Module(
         bind<IRemoteDataSource>() with singleton {
             KtorSearchTicket(
                 httpClient = instance(),
-                json = instance()
             )
         }
         bind<ApiRepository>() with singleton {

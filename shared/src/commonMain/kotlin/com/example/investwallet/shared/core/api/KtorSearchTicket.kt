@@ -8,7 +8,6 @@ import kotlinx.serialization.json.Json
 
 class KtorSearchTicket(
     private val httpClient: HttpClient,
-    val json: Json
 ): IRemoteDataSource {
     override suspend fun fetchTickets(): String {
         val httpRequest = httpClient.get {
