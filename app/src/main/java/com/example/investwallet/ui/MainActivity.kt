@@ -1,5 +1,6 @@
 package com.example.investwallet.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -35,17 +36,22 @@ import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.size.Scale
 import com.example.investwallet.shared.Greeting
+import com.example.investwallet.shared.core.api.apiModule
+import com.example.investwallet.shared.di.EngineSDK
 import com.example.investwallet.ui.search.SearchScreen
 import com.example.investwallet.ui.theme.InvestWalletTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @SuppressLint("CoroutineCreationDuringComposition")
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,8 +61,16 @@ class MainActivity : ComponentActivity() {
             val systemUiController = rememberSystemUiController()
             val darkTheme: Boolean = isSystemInDarkTheme()
             
+            GlobalScope.launch(Dispatchers.IO) {
+                try {
+                    val a = EngineSDK.apiModule.repo.fetchTickers()
+                    Log.e("test_kmm", a)
+                } catch (e: Exception) {
+                    Log.e("test_kmm", e.message.toString())
+                }
+            }
 
-            SideEffect {
+           /* SideEffect {
                 systemUiController.setSystemBarsColor(
                     color = if (darkTheme) Color(0xFF121212) else Color.Transparent,
                     darkIcons = !darkTheme
@@ -69,7 +83,7 @@ class MainActivity : ComponentActivity() {
                     InvestWalletApp()
                 }
 
-            }
+            }*/
         }
     }
 }

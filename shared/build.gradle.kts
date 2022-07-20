@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform")
+    id ("org.jetbrains.kotlin.plugin.serialization")
     id("com.android.library")
 }
 
@@ -18,12 +19,23 @@ kotlin {
 
     sourceSets {
         val ktorVersion = "2.0.3"
+        val coroutinesVersion = "1.4.2-native-mt"
+
 
         val commonMain by getting{
             dependencies{
+                api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.3")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
+
                 //Ktor
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
                 implementation("io.ktor:ktor-client-cio:$ktorVersion")
+                implementation("io.ktor:ktor-client-logging:$ktorVersion")
+
+                // Coroutines
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutinesVersion}")
+
+                implementation("org.kodein.di:kodein-di:7.14.0")
             }
         }
         val commonTest by getting {
@@ -49,6 +61,7 @@ kotlin {
             dependencies {
                 //Ktor
                 implementation("io.ktor:ktor-client-darwin:$ktorVersion")
+                implementation("io.ktor:ktor-client-ios:${ktorVersion}")
             }
         }
         val iosX64Test by getting
