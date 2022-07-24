@@ -37,6 +37,7 @@ import coil.request.SuccessResult
 import coil.size.Scale
 import com.example.investwallet.shared.Greeting
 import com.example.investwallet.shared.core.api.apiModule
+import com.example.investwallet.shared.core.api.search.di.repoSearch
 import com.example.investwallet.shared.di.EngineSDK
 import com.example.investwallet.ui.search.SearchScreen
 import com.example.investwallet.ui.theme.InvestWalletTheme
@@ -63,8 +64,13 @@ class MainActivity : ComponentActivity() {
             
             GlobalScope.launch(Dispatchers.IO) {
                 try {
-                    val a = EngineSDK.apiModule.repo.fetchTickers()
-                    Log.e("test_kmm", a)
+                    val a = EngineSDK.repoSearch.apiSearchRepository.getFindQuotes(
+                        type = "stock",
+                        lang = "ru",
+                        text = "APPLE",
+                        exchange = ""
+                    )
+                    Log.e("test_kmm", a.toString())
                 } catch (e: Exception) {
                     Log.e("test_kmm", e.message.toString())
                 }
