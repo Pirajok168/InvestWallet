@@ -1,5 +1,6 @@
 package com.example.investwallet.shared.core.api.search.entity
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 
@@ -13,7 +14,7 @@ data class StockDTO(
     val type: String? = null,
     val typespecs: List<String>? = null,
     val logoid: String? = null,
-    val `base-currency-logoid`: String? = null,
+    @SerialName("base-currency-logoid") val base_currency_logoid: String? = null,
     val prefix: String? = null,
     val currency_code: String? = null,
 )

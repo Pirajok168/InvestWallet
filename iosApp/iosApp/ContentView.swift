@@ -6,11 +6,32 @@
 //
 
 import SwiftUI
+import shared
 
 struct ContentView: View {
+    @State var greet = "Loading..."
+    
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        VStack {
+            Text(greet)
+                .padding()
+            Button("Click", action: {
+                Task{
+                   
+                    do{
+                        let result = try await EngineSDK().repoSearch.apiSearchRepository.getFindQuotes(text: "APPLE",
+                                                                                          lang: "ru",
+                                                                                           type: "stock",
+                                                                                          exchange: "")
+                        greet = result[0].country ??  ""
+                    }catch{
+                        print(error)
+                    }
+                     
+                }
+            })
+        }
+        
     }
 }
 
