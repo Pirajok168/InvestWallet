@@ -17,4 +17,23 @@ data class StockDTO(
     @SerialName("base-currency-logoid") val base_currency_logoid: String? = null,
     val prefix: String? = null,
     val currency_code: String? = null,
-)
+){
+    fun getURLImg(): String{
+        return if (base_currency_logoid == null) {
+            "https://s3-symbol-logo.tradingview.com/$logoid--big.svg"
+        }else{
+            "https://s3-symbol-logo.tradingview.com/$base_currency_logoid--big.svg"
+        }
+    }
+
+    private fun replace(str: String): String{
+        var newStr = str
+        newStr = newStr.replace("<em>", "")
+        newStr = newStr.replace("</em>", "")
+        return newStr
+    }
+
+    fun getDescriptions(): String {
+        return "${replace(description!!)}"
+    }
+}

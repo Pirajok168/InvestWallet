@@ -62,21 +62,9 @@ class MainActivity : ComponentActivity() {
             val systemUiController = rememberSystemUiController()
             val darkTheme: Boolean = isSystemInDarkTheme()
             
-            GlobalScope.launch(Dispatchers.IO) {
-                try {
-                    val a = EngineSDK.repoSearch.apiSearchRepository.getFindQuotes(
-                        type = "stock",
-                        lang = "ru",
-                        text = "APPLE",
-                        exchange = ""
-                    )
-                    Log.e("test_kmm", a.toString())
-                } catch (e: Exception) {
-                    Log.e("test_kmm", e.message.toString())
-                }
-            }
 
-           /* SideEffect {
+
+            SideEffect {
                 systemUiController.setSystemBarsColor(
                     color = if (darkTheme) Color(0xFF121212) else Color.Transparent,
                     darkIcons = !darkTheme
@@ -89,7 +77,7 @@ class MainActivity : ComponentActivity() {
                     InvestWalletApp()
                 }
 
-            }*/
+            }
         }
     }
 }

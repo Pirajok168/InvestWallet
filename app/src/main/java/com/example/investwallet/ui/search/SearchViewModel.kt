@@ -3,11 +3,12 @@ package com.example.investwallet.ui.search
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.investwallet.dto.QuoteDTO
-import com.example.investwallet.repository.ApiRepository
+import com.example.investwallet.shared.core.api.search.di.repoSearch
+import com.example.investwallet.shared.core.api.search.entity.StockDTO
+import com.example.investwallet.shared.core.api.search.repository.RepositorySearch
+import com.example.investwallet.shared.di.EngineSDK
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -15,9 +16,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.internal.connection.Exchange
-import java.text.FieldPosition
-import java.util.prefs.AbstractPreferences
 import javax.inject.Inject
 
 
@@ -29,7 +27,7 @@ sealed class StateSearch{
 
 
 data class SearchViewState(
-    val listSearchingTicket: List<QuoteDTO> = emptyList(),
+    val listSearchingTicket: List<StockDTO> = emptyList(),
     val isLoading: StateSearch = StateSearch.LoadingSearch,
 )
 
@@ -39,12 +37,12 @@ sealed class ToolsTicket(val type: String, val text: String, val position: Int){
     object Crypto: ToolsTicket("crypto", "Криптовалюты", 2)
 }
 
-@HiltViewModel
-class SearchViewModel @Inject constructor(
-    private val repository: ApiRepository
+
+class SearchViewModel constructor(
+    private val repository: RepositorySearch = EngineSDK.repoSearch.apiSearchRepository
 ) : ViewModel() {
 
-    val symbol = repository.symbol
+    //val symbol = repository.symbol
     val searchValue: MutableState<String> = mutableStateOf("")
     private val _searchViewState: MutableStateFlow<SearchViewState> = MutableStateFlow(SearchViewState())
     val searchViewState: StateFlow<SearchViewState>
@@ -60,7 +58,7 @@ class SearchViewModel @Inject constructor(
     fun updateList(toolsTicket: ToolsTicket){
         _searchViewState.value = SearchViewState()
         viewModelScope.launch (Dispatchers.IO){
-            val list = async { repository.getListTicket("", type = toolsTicket.type, exchange = exchange.value.exchange) }
+            val list = async { repository.getFindQuotes("", type = toolsTicket.type, exchange = exchange.value.exchange, lang = "ru") }
             withContext(Dispatchers.Main){
                 _searchViewState.value = SearchViewState(list.await(), StateSearch.EndSearch)
             }
@@ -73,7 +71,7 @@ class SearchViewModel @Inject constructor(
                 searchValue.value = newValue
             }
 
-            val list  = repository.getListTicket(newValue, type = selectedOption.type, exchange = exchange.value.exchange)
+            val list  = repository.getFindQuotes(newValue, type = selectedOption.type, exchange = exchange.value.exchange, lang = "ru")
 
             withContext(Dispatchers.Main){
                 val state = if (list.isEmpty()){

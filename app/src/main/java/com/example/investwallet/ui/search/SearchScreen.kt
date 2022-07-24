@@ -6,7 +6,6 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -42,22 +41,21 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.example.investwallet.R
 import com.example.investwallet.dto.QuoteDTO
-import com.google.accompanist.flowlayout.FlowRow
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.example.investwallet.shared.core.api.search.entity.StockDTO
 import kotlinx.coroutines.launch
 import me.vponomarenko.compose.shimmer.shimmer
-import javax.xml.transform.Source
 
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SearchScreen(
-    searchViewModel: SearchViewModel = hiltViewModel(),
+    searchViewModel: SearchViewModel = viewModel(),
     onBack: () -> Unit,
     onOpen: (tag: String, category: String, country: String) -> Unit,
 ) {
@@ -127,12 +125,14 @@ fun SearchScreen(
 
                             items(searchViewState.value.listSearchingTicket){
                                 SearchCardTicket(
-                                    it,
-                                    onOpen={
-                                            symbol->
-                                        onOpen(symbol.getTag(),selectedOption.type, symbol.country?:"")
-                                    }
-                                )
+                                    it
+                                ) { symbol ->
+                                   /* onOpen(
+                                        symbol.getTag(),
+                                        selectedOption.type,
+                                        symbol.country ?: ""
+                                    )*/
+                                }
                             }
                         }
                         StateSearch.LoadingSearch -> {
@@ -418,8 +418,8 @@ fun SearchTopBar(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SearchCardTicket(
-    ticket: QuoteDTO,
-    onOpen: (ticket: QuoteDTO) -> Unit
+    ticket: StockDTO,
+    onOpen: (ticket: StockDTO) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -471,7 +471,7 @@ fun SearchCardTicket(
             Spacer(modifier = Modifier.size(5.dp))
             Surface(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = ticket.exchange,
+                    text = ticket.exchange ?: "",
                     fontWeight = FontWeight.ExtraLight,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
