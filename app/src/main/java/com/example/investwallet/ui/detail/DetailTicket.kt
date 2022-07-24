@@ -396,7 +396,7 @@ fun ItemPreview() {
                     modifier = Modifier.size(60.dp)
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.imgimg),
+                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
                         contentDescription = ""
                     )
                 }

@@ -24,18 +24,19 @@ kotlin {
 
         val commonMain by getting{
             dependencies{
-                api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.3")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
 
-                //Ktor
-                implementation("io.ktor:ktor-client-core:$ktorVersion")
-                implementation("io.ktor:ktor-client-cio:$ktorVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3")
+
+                // DI
+                implementation("org.kodein.di:kodein-di:7.12.0")
+
+                // HTTP
+                implementation("io.ktor:ktor-client-core:${ktorVersion}")
+                implementation("io.ktor:ktor-client-json:${ktorVersion}")
+                implementation("io.ktor:ktor-client-serialization:${ktorVersion}")
                 implementation("io.ktor:ktor-client-logging:$ktorVersion")
-
-                // Coroutines
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutinesVersion}")
-
-                implementation("org.kodein.di:kodein-di:7.14.0")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
             }
         }
         val commonTest by getting {
