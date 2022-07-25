@@ -21,6 +21,7 @@ extension ContentView {
         let id = UUID()
         let description: String
         let exchange: String
+        let logoId: String
     }
     
     class ViewModel: ObservableObject{
@@ -37,9 +38,10 @@ extension ContentView {
                 let list = try await repoSearch.getFindQuotes(text: newValue, lang: "ru", type: "stock", exchange: "")
                 
                 let uiStock = list.map{(stock: StockDTO) in
-                     
-                    return UIStock(description: stock.getDescriptions(), exchange: stock.exchange ?? "")
+                    
+                    return UIStock(description: stock.getDescriptions(), exchange: stock.exchange ?? "", logoId: stock.getURLImg())
                 }
+            
                 DispatchQueue.main.async {
                     self.searchState = SearchState(
                         isLoadind: false,

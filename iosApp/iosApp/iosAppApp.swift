@@ -6,15 +6,26 @@
 //
 
 import SwiftUI
+import SDWebImageSVGCoder
 import shared
 
 @main
 struct iosAppApp: App {
+    
+    init(){
+        setUp()
+    }
     var body: some Scene {
         WindowGroup {
             SearchScreen(
                 viewModel: .init(repo: EngineSDK().repoSearch.apiSearchRepository)
             )
         }
+    }
+}
+
+private extension iosAppApp{
+    func setUp(){
+        SDImageCodersManager.shared.addCoder(SDImageSVGCoder.shared)
     }
 }

@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class StockDTO(
-    val country: String?,
+    val country: String? = null,
     val description: String? = null,
     var exchange: String? = null,
     val provider_id: String? = null,

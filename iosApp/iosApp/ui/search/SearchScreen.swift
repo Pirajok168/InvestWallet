@@ -27,8 +27,7 @@ struct SearchScreen: View {
             }
             List{
                 ForEach(viewModel.searchState.listSearched){stock in
-                    WidgetSearch(description: stock.description, exchange: stock.exchange)
-            
+                    WidgetSearch(description: stock.description, exchange: stock.exchange, logoId: stock.logoId)
                 }
             }.listStyle(.plain)
            
